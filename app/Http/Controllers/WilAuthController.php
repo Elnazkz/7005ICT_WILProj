@@ -23,8 +23,9 @@ class WilAuthController extends Controller
             'password' => 'required',
         ]);
 
+        $remember = $request->has('remember');
         $credentials = $request->only('email', 'password');
-        if (Auth::attempt($credentials)) {
+        if (Auth::attempt($credentials, $remember)) {
             return redirect()->intended('dashboard')
                 ->withSuccess('Signed in');
         }
@@ -77,5 +78,15 @@ class WilAuthController extends Controller
         Auth::logout();
 
         return Redirect('login');
+    }
+
+    public static function getUserType(User $user) {
+        if ($user->name === 'Teacher') return 'Teacher';
+
+        switch ($user->user_type) {
+            case 1: return 'InP';
+            case 2: return 'Student';
+            default: return 'NA'; // Not Applicable
+        }
     }
 }
