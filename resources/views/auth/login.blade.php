@@ -1,4 +1,5 @@
 @extends('layouts.main')
+@section('title', 'login')
 @section('content')
     <main class="login-form">
         <div class="cotainer">

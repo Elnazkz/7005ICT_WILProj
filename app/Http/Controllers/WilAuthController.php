@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class WilAuthController extends Controller
 {
@@ -26,11 +27,12 @@ class WilAuthController extends Controller
         $remember = $request->has('remember');
         $credentials = $request->only('email', 'password');
         if (Auth::attempt($credentials, $remember)) {
-            return redirect()->intended('dashboard')
-                ->withSuccess('Signed in');
+            $request->session()->regenerate();
+            return redirect()->intended('dashboard')->with('success', 'Signed in');
         }
 
-        return redirect("login")->withSuccess('Login details are not valid');
+        //return redirect('login')->with('success', 'Login details are not valid');
+        return back()->withErrors(['email' => 'Credentials are invalid.'])->onlyInput('email');
     }
 
     public function registration()
@@ -41,15 +43,17 @@ class WilAuthController extends Controller
     public function customRegistration(Request $request)
     {
         $request->validate([
-            'name' => 'required',
+            'name' => 'required|min:5',
             'email' => 'required|email|unique:users',
             'password' => 'required|min:6',
+            'username' => 'min:5',
+            'user_type' => ['required', Rule::in(['INP', 'STD'])]
         ]);
 
         $data = $request->all();
         $check = $this->create($data);
 
-        return redirect("dashboard")->withSuccess('You have signed-in');
+        return redirect('dashboard')->with('success', 'You have signed-in');
     }
 
     public function create(array $data)
@@ -60,7 +64,7 @@ class WilAuthController extends Controller
             'password' => Hash::make($data['password']),
             'username' => $data['name'],
             'approved' => false,
-            'user_type' => 0,
+            'user_type' => $data['user_type'],
         ]);
     }
 
@@ -70,23 +74,26 @@ class WilAuthController extends Controller
             return view('dashboard');
         }
 
-        return redirect("login")->withSuccess('You are not allowed to access');
+        return redirect('login')->withErrors('You are not allowed to access');
     }
 
-    public function signOut() {
-        Session::flush();
+    public function signOut(Request $request) {
         Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        Session::flush();
 
-        return Redirect('login');
+        return Redirect('/');
     }
 
     public static function getUserType(User $user) {
-        if ($user->name === 'Teacher') return 'Teacher';
+        if ($user->name === 'Teacher')
+            return 'Teacher';
 
         switch ($user->user_type) {
-            case 1: return 'InP';
-            case 2: return 'Student';
-            default: return 'NA'; // Not Applicable
+            case 'INP': return 'InP';
+            case 'STD': return 'Student';
+            default: return 'NAU'; // Not Applicable
         }
     }
 }
