@@ -24,14 +24,14 @@ class WilAuthController extends Controller
             'password' => 'required',
         ]);
 
-        $remember = $request->has('remember');
-        $credentials = $request->only('email', 'password');
-        if (Auth::attempt($credentials, $remember)) {
+        $input = $request->only('email', 'password');
+        $fieldType = filter_var($request->email, FILTER_VALIDATE_EMAIL) ? 'email' : 'name';
+        $credentials = array($fieldType => $input['email'], 'password' => $input['password']);
+        if(auth()->attempt($credentials)) {
             $request->session()->regenerate();
-            return redirect()->intended('dashboard')->with('success', 'Signed in');
+            return redirect()->intended('/dispatch')->with('success', 'Signed in');
         }
 
-        //return redirect('login')->with('success', 'Login details are not valid');
         return back()->withErrors(['email' => 'Credentials are invalid.'])->onlyInput('email');
     }
 
@@ -43,17 +43,17 @@ class WilAuthController extends Controller
     public function customRegistration(Request $request)
     {
         $request->validate([
-            'name' => 'required|min:5',
+            'name' => 'required|min:5|unique:users|not_regex:/^(teacher)$/i',
             'email' => 'required|email|unique:users',
             'password' => 'required|min:6',
-            'username' => 'min:5',
-            'user_type' => ['required', Rule::in(['INP', 'STD'])]
+            'user_type' => ['required', Rule::in(['InP', 'Student'])]
         ]);
 
         $data = $request->all();
         $check = $this->create($data);
+        Auth::login($check);
 
-        return redirect('dashboard')->with('success', 'You have signed-in');
+        return redirect('/dispatch')->with('success', 'You have signed-in');
     }
 
     public function create(array $data)
@@ -62,16 +62,24 @@ class WilAuthController extends Controller
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
-            'username' => $data['name'],
             'approved' => false,
             'user_type' => $data['user_type'],
         ]);
     }
 
-    public function dashboard()
+    public function dispatch()
     {
         if(Auth::check()){
-            return view('dashboard');
+            switch (Auth::user()['user_type']) {
+                case 'Teacher':
+                    $inps = User::where('user_type', 'InP')->paginate(5);
+                    return view('teacher.dashboard', compact('inps'));
+                case 'InP':
+                    return view('inp.dashboard');
+                case 'Student':
+                    return view('student.dashboard');
+                default: return view('dashboard');
+            }
         }
 
         return redirect('login')->withErrors('You are not allowed to access');
@@ -91,8 +99,8 @@ class WilAuthController extends Controller
             return 'Teacher';
 
         switch ($user->user_type) {
-            case 'INP': return 'InP';
-            case 'STD': return 'Student';
+            case 'InP': return 'InP';
+            case 'Student': return 'Student';
             default: return 'NAU'; // Not Applicable
         }
     }

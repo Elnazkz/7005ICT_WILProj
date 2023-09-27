@@ -20,8 +20,8 @@ Route::post('/custom-login', [WilAuthController::class, 'customLogin'])->name('l
 Route::get('/registration', [WilAuthController::class, 'registration'])->name('register-user');
 Route::post('/custom-registration', [WilAuthController::class, 'customRegistration'])->name('register.custom');
 
-Route::get('dashboard', [WilAuthController::class, 'dashboard']);
-Route::get('signout', [WilAuthController::class, 'signOut'])->name('signout');
+Route::get('/dispatch', [WilAuthController::class, 'dispatch']);
+Route::get('/signout', [WilAuthController::class, 'signOut'])->name('signout');
 
 // Default home route
-Route::get('/', [WilAuthController::class, 'dashboard'])->name('home');
+Route::get('/', [WilAuthController::class, 'dispatch'])->name('home');

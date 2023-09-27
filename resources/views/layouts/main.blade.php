@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-100">
 <head>
     <title>@yield('title')</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
 </head>
-<body>
+<body class="d-flex flex-column h-100">
 <nav class="navbar navbar-light navbar-expand-lg mb-5" style="background-color: #e3f2fd;">
     <div class="container">
         <a class="navbar-brand mr-auto" href="#">WIL Projects</a>
@@ -24,7 +24,11 @@
                 @else
                     <li class="nav-item">
                         <span class="nav-link">
-                            {{ Auth::user()['name'] ?? "no auth::user" }}
+                            @if (Auth::user()['approved'])
+                                {{ Auth::user()['name'] ?? "no auth::user" }}
+                            @else
+                                <s>{{ Auth::user()['name'] ?? "no auth::user" }}</s>
+                            @endif
                             ({{ \App\Http\Controllers\WilAuthController::getUserType(Auth::user()) }})
                         </span>
                     </li>
@@ -37,6 +41,8 @@
     </div>
 </nav>
 @yield('content')
+
+@include('layouts/footer')
 
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js" integrity="sha384-cuYeSxntonz0PPNlHhBs68uyIAVpIIOZZ5JqeqvYYIcEL727kskC66kF92t6Xl2V" crossorigin="anonymous"></script>
