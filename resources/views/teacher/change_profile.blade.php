@@ -18,9 +18,9 @@
                                 <!-- old password -->
                                 <div class="form-group mb-3">
                                     <input type="password" placeholder="Prev Password" class="form-control"
-                                           id="prev-password" name="prev-password">
-                                    @if ($errors->has('prev-password'))
-                                        <span class="text-danger">{{ $errors->first('prev-password') }}</span>
+                                           id="prev_password" name="prev_password">
+                                    @if ($errors->has('prev_password'))
+                                        <span class="text-danger">{{ $errors->first('prev_password') }}</span>
                                     @endif
                                 </div>
                                 <!-- new password -->

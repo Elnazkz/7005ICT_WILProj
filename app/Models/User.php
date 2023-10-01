@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Auth;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
@@ -49,19 +50,36 @@ class User extends Authenticatable
     ];
 
     public function profile() {
-        return $this->hasOne(Profile::class);
+        return $this->hasOne(Profile::class, 'user_id', 'id');
     }
 
     public function user_roles() {
-        return $this->hasMany(UserRole::class);
-        //return $this->belongsToMany(Role::class, UserRole::class, 'user_id', 'role_id');
+        return $this->hasMany(UserRole::class, 'user_id', 'id');
     }
 
     public function project() {
-        return $this->hasMany(Project::class);
+        return $this->hasMany(Project::class, 'user_id', 'id');
     }
 
     public function project_user() {
-        return $this->hasMany(ProjectUser::class);
+        return $this->hasMany(ProjectUser::class, 'user_id', 'id');
+    }
+
+    public function has_role($user_roles, $role_id) {
+        foreach ($user_roles as $user_role) {
+            if ($user_role->role_id === $role_id)
+                return true;
+        }
+        return false;
+    }
+
+    public static function user_approve() {
+        $user = Auth::User();
+        if ($user->user_type = config('_global.student')) {
+            $prof_cnt = $user->profile()->count();
+            $user_role_cnt = $user->user_roles()->count();
+            $user->approved = ($prof_cnt > 0) and ($user_role_cnt > 0);
+            $user->save();
+        }
     }
 }

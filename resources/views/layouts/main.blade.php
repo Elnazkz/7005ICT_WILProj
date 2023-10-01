@@ -24,7 +24,7 @@
                 @else
                     <li class="nav-item">
                         <span class="nav-link">
-                            @if (Auth::user()['approved'] or Auth::user()['user_type'] != "InP")
+                            @if ((Auth::user()['user_type'] == config('_global.teacher')) or Auth::user()['approved'])
                                 {{ Auth::user()['name'] ?? "no auth::user" }}
                             @else
                                 <span class="bg-danger text-white p-1">{{ Auth::user()['name'] ?? "no auth::user" }}</span>

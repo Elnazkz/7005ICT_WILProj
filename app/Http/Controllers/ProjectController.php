@@ -148,4 +148,8 @@ class ProjectController extends Controller
 
         return redirect('/dispatch')->with('success', 'Project created successfully');
     }
+
+    public function apply_to_project(Project $project) {
+        return view('/student.project_details', compact('project'));
+    }
 }

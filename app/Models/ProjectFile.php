@@ -14,9 +14,10 @@ class ProjectFile extends Model
     protected $fillable = [
         'file_path',
         'project_id',
+        'name',
     ];
 
     public function project() {
-        return $this->belongsTo(Project::class);
+        return $this->belongsTo(Project::class, 'project_id', 'id');
     }
 }

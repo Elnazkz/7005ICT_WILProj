@@ -19,18 +19,19 @@ use \App\Http\Controllers\WilAuthController;
 
 // Auth routes
 Route::get('/login', [WilAuthController::class, 'index'])->name('login');
-Route::post('/custom-login', [WilAuthController::class, 'customLogin'])->name('login.custom');
+Route::post('/custom-login', [WilAuthController::class, 'custom_login'])->name('login.custom');
 Route::get('/registration', [WilAuthController::class, 'registration'])->name('register-user');
-Route::post('/custom-registration', [WilAuthController::class, 'customRegistration'])->name('register.custom');
+Route::post('/custom-registration', [WilAuthController::class, 'custom_registration'])->name('register.custom');
 
-Route::get('/change-profile', [WilAuthController::class, 'changeProfile']);
-Route::post('/profile-changing', [WilAuthController::class, 'profileChanging']);
+Route::get('/change-profile', [WilAuthController::class, 'change_profile']);
+Route::post('/profile-changing', [WilAuthController::class, 'profile_changing']);
+Route::post('/user_profile_changing', [WilAuthController::class, 'user_profile_changing']);
 
 Route::get('/dispatch', [WilAuthController::class, 'dispatch']);
-Route::get('/signout', [WilAuthController::class, 'signOut'])->name('signout');
+Route::get('/signout', [WilAuthController::class, 'signout'])->name('signout');
 
-Route::post('/approve-inp', [WilAuthController::class, 'approveInp']);
-Route::get('/approve-inps', [WilAuthController::class, 'approveInps']);
+Route::post('/approve-inp', [WilAuthController::class, 'approve_inp']);
+Route::get('/approve-inps', [WilAuthController::class, 'approve_inps']);
 
 Route::get('/profiles', [ProfileController::class, 'index']);
 
@@ -44,6 +45,7 @@ Route::post('/project_update/{project}', [ProjectController::class, 'update']);
 Route::get('/project_del/{project}', [ProjectController::class, 'destroy']);
 Route::post('/project_image', [ProjectController::class, 'store_image']);
 Route::post('/project_file', [ProjectController::class, 'store_file']);
+Route::get('/apply_to_project/{project}', [ProjectController::class, 'apply_to_project']);
 
 // Default home route
 Route::get('/', [WilAuthController::class, 'dispatch'])->name('home');

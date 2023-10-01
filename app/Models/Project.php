@@ -21,26 +21,18 @@ class Project extends Model
     ];
 
     public function user() {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
     public function project_users() {
-        return $this->hasMany(ProjectUser::class);
+        return $this->hasMany(ProjectUser::class, 'project_id', 'id');
     }
 
     public function project_files() {
-        return $this->hasMany(ProjectFile::class);
+        return $this->hasMany(ProjectFile::class, 'project_id', 'id');
     }
 
     public function project_images() {
-        return $this->hasMany(ProjectImage::class);
-    }
-
-    public function project_roles() {
-        return $this->hasMany(ProjectRole::class);
-    }
-
-    public function role() {
-        return $this->belongsTo(Role::class);
+        return $this->hasMany(ProjectImage::class, 'project_id', 'id');
     }
 }
