@@ -1,10 +1,10 @@
 @extends('layouts.main')
-@section('title', 'Teacher Dashboard')
+@section('title', 'InP Dashboard')
 @section('content')
     <div class="container d-flex h-100">
         <div class="mr-auto p-2 align-self-stretch">
-            @include('teacher.sidebar')
+            @include('inp.sidebar')
         </div>
-        @yield('teacher_content')
+        @yield('inp_content')
     </div>
 @endsection

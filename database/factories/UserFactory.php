@@ -26,8 +26,8 @@ class UserFactory extends Factory
             'email_verified_at' => now(),
             'password' => Hash::make('password'), //'$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
             'remember_token' => Str::random(10),
-            'approved' => fake()->boolean(),
-            'user_type' => fake()->randomElements(['InP', 'Student'])[0],
+            'approved' => false, // fake()->boolean(),
+            'user_type' => fake()->randomElements([config('_global.inp'), config('_global.student')])[0],
         ];
     }
 

@@ -16,9 +16,12 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('project_id');
             $table->string('justification_note');
+            $table->boolean('assigned');
             $table->foreign('user_id')->references('id')->on('users');
             $table->foreign('project_id')->references('id')->on('projects');
             $table->timestamps();
+
+            $table->unique('user_id', 'project_id');
         });
     }
 

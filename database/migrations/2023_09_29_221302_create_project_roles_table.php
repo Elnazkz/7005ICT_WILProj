@@ -11,12 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('profiles', function (Blueprint $table) {
+        Schema::create('project_roles', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id')->unique();
-            $table->integer('gpa');
-            $table->foreign('user_id')->references('id')->on('users');
+
+            $table->unsignedBigInteger('project_id');
+            $table->unsignedBigInteger('role_id');
+            $table->integer('nop')->default(0);
+            $table->foreign('project_id')->references('id')->on('projects');
+            $table->foreign('role_id')->references('id')->on('roles');
             $table->timestamps();
+            $table->unique(['project_id', 'role_id']);
         });
     }
 
@@ -26,6 +30,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::disableForeignKeyConstraints();
-        Schema::dropIfExists('profiles');
+        Schema::dropIfExists('project_roles');
     }
 };

@@ -12,6 +12,7 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
+    protected $table = 'users';
     /**
      * The attributes that are mass assignable.
      *
@@ -46,4 +47,21 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function profile() {
+        return $this->hasOne(Profile::class);
+    }
+
+    public function user_roles() {
+        return $this->hasMany(UserRole::class);
+        //return $this->belongsToMany(Role::class, UserRole::class, 'user_id', 'role_id');
+    }
+
+    public function project() {
+        return $this->hasMany(Project::class);
+    }
+
+    public function project_user() {
+        return $this->hasMany(ProjectUser::class);
+    }
 }

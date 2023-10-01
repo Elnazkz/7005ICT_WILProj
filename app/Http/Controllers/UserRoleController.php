@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\userRole;
+use App\Models\UserRole;
 use Illuminate\Http\Request;
 
 class UserRoleController extends Controller
@@ -38,7 +38,7 @@ class UserRoleController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(userRole $userRole)
+    public function show(UserRole $userRole)
     {
         //
     }
@@ -46,7 +46,7 @@ class UserRoleController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(userRole $userRole)
+    public function edit(UserRole $userRole)
     {
         //
     }
@@ -54,7 +54,7 @@ class UserRoleController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, userRole $userRole)
+    public function update(Request $request, UserRole $userRole)
     {
         //
     }
@@ -62,7 +62,7 @@ class UserRoleController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(userRole $userRole)
+    public function destroy(UserRole $userRole)
     {
         //
     }

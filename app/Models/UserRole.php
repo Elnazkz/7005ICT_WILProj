@@ -5,23 +5,22 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ProjectUser extends Model
+class UserRole extends Model
 {
     use HasFactory;
 
-    protected $table = 'project_users';
+    protected $table = 'user_roles';
 
     protected $fillable = [
         'user_id',
-        'project_id',
-        'justification_note',
+        'role_id',
     ];
-
-    public function project() {
-        return $this->belongsTo(Project::class);
-    }
 
     public function user() {
         return $this->belongsTo(User::class);
+    }
+
+    public function role() {
+        return $this->belongsTo(Role::class);
     }
 }

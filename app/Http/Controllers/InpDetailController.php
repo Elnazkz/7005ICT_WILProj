@@ -2,25 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Profile;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
-class ProfileController extends Controller
+class InpDetailController extends Controller
 {
-    public function __construct() {
-        $this->middleware('auth')->only(['create', 'edit', 'destroy']);
-    }
-
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $students = User::where('user_type', config('_global.student'))
-            ->with('profile', 'user_roles.role')
-            ->paginate(config('_global.items_per_page'));
-        return view('teacher.students_profile', compact(['students']));
+        //
     }
 
     /**
@@ -42,15 +35,20 @@ class ProfileController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Profile $profile)
+    public function show(string $id)
     {
-        //
+        if(Auth::check()){
+            $user = User::find($id);
+            $projects = $user->project;
+            return view('inp.inp_details', compact(['user', 'projects']));
+        } else
+            return redirect('login')->withErrors('You are not allowed to access');
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Profile $profile)
+    public function edit(string $id)
     {
         //
     }
@@ -58,7 +56,7 @@ class ProfileController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Profile $profile)
+    public function update(Request $request, string $id)
     {
         //
     }
@@ -66,7 +64,7 @@ class ProfileController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Profile $profile)
+    public function destroy(string $id)
     {
         //
     }

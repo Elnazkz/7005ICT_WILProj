@@ -2,7 +2,7 @@
 @section('title', 'login')
 @section('content')
     <main class="login-form">
-        <div class="cotainer">
+        <div class="container">
             <div class="row justify-content-center w-100">
                 <div class="col-6">
                     <div class="card">
