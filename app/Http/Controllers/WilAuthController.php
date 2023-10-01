@@ -86,8 +86,8 @@ class WilAuthController extends Controller
                 $inps = User::where('user_type', config('_global.inp'))->paginate(config('_global.items_per_page'));
                 return view('inp.dashboard', compact('inps'));
             case config('_global.student'):
-                $student = User::where('user_type', config('_global.student'))->get();
-                return view('student.dashboard', compact('student'));
+                $inps = User::where('user_type', config('_global.inp'))->paginate(config('_global.items_per_page'));
+                return view('student.dashboard', compact('inps'));
             default:
                 return view('dashboard');
         }
@@ -95,22 +95,19 @@ class WilAuthController extends Controller
 
     public function changeProfile()
     {
-        if (Auth::check()) {
-            $user = Auth::user();
-            switch ($user->user_type) {
-                case config('_global.teacher'):
-                    $name = $user->name;
-                    return view('teacher.change_profile', compact('name'));
-                case config('_global.inp'):
-                    return view('inp.change_profile', compact('user'));
-                case config('_global.student'):
-                    break;
-                default:
-                    return view('dashboard');
-            }
+        $user = Auth::user();
+        switch ($user->user_type) {
+            case config('_global.teacher'):
+                $name = $user->name;
+                return view('teacher.change_profile', compact('name'));
+            case config('_global.inp'):
+                return view('inp.change_profile', compact('user'));
+            case config('_global.student'):
+                return view('student.change_profile', compact('user'));
+            default:
+                return view('dashboard');
         }
 
-        return redirect('login')->withErrors('You are not allowed to access');
     }
 
     public function profileChanging(Request $request)

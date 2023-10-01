@@ -1,4 +1,5 @@
 @extends('inp.layout')
+
 @section('inp_content')
     <div class="p-2 align-self-stretch w-100">
         <div class="d-flex flex-column p-3 h-100">
