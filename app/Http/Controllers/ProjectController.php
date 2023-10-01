@@ -11,8 +11,10 @@ use Illuminate\Validation\Rule;
 
 class ProjectController extends Controller
 {
-    public function __construct() {
-        $this->middleware('auth')->only(['create', 'edit', 'destroy', 'show']);
+    public function __construct()
+    {
+//        $this->middleware('auth')->only(['create', 'store', 'edit', 'update', 'destroy', 'show']);
+        $this->middleware('auth')->except(['index', 'store_image', 'store_file']);
     }
 
     /**
@@ -28,11 +30,8 @@ class ProjectController extends Controller
      */
     public function create()
     {
-        if (Auth::check()) {
-            $user = Auth::user();
-            return view('inp.create_project', compact('user'));
-        } else
-            return redirect('login')->withErrors('You are not allowed to access');
+        $user = Auth::user();
+        return view('inp.create_project', compact('user'));
     }
 
     /**
@@ -40,33 +39,31 @@ class ProjectController extends Controller
      */
     public function store(Request $request)
     {
-        if (Auth::check()) {
-            $request->validate([
-                'title' => ['required',
-                    'min:5',
-                    Rule::unique('projects')
-                        ->where('title', $request->title)
-                        ->where('year', $request->year)
-                        ->where('trimester', $request->trimester),
-                ],
-                'description' => ['required', new MinWordsCount(3)],
-                'needed_students' => 'required|numeric|between:3,6',
-                'year' => 'required',
-                'trimester' => 'required|between:1,3',
-            ]);
+        $request->validate([
+            'title' => ['required',
+                'min:5',
+                Rule::unique('projects')
+                    ->where('title', $request->title)
+                    ->where('year', $request->year)
+                    ->where('trimester', $request->trimester),
+            ],
+            'description' => ['required', new MinWordsCount(3)],
+            'needed_students' => 'required|numeric|between:3,6',
+            'year' => 'required',
+            'trimester' => 'required|between:1,3',
+        ]);
 
-            $project = new Project();
-            $project->title = $request->title;
-            $project->description = $request->description;
-            $project->needed_students = $request->needed_students;
-            $project->year = $request->year;
-            $project->trimester = $request->trimester;
-            $project->user_id = Auth::user()->id;
-            $project->save();
+        $project = new Project();
+        $project->title = $request->title;
+        $project->description = $request->description;
+        $project->needed_students = $request->needed_students;
+        $project->year = $request->year;
+        $project->trimester = $request->trimester;
+        $project->user_id = Auth::user()->id;
+        $project->save();
 
-            return redirect('/dispatch')->with('success', 'Project created successfully');
-        } else
-            return redirect('login')->withErrors('You are not allowed to access');
+        return redirect('/dispatch')->with('success', 'Project created successfully');
+
     }
 
     /**
@@ -74,14 +71,12 @@ class ProjectController extends Controller
      */
     public function show(Project $project)
     {
-        if(Auth::check()){
-            //$project = Project::where('projects.id', '=', $project_id)->first();
-            if (Auth::user()->id === $project->user_id)
-                return view('inp.project_details_editable', compact(['project']));
-            else
-                return view('inp.project_details', compact(['project']));
-        } else
-            return redirect('login')->withErrors('You are not allowed to access');
+        //$project = Project::where('projects.id', '=', $project_id)->first();
+        if (Auth::user()->id === $project->user_id)
+            return view('inp.project_details_editable', compact(['project']));
+        else
+            return view('inp.project_details', compact(['project']));
+
     }
 
     /**
@@ -97,19 +92,17 @@ class ProjectController extends Controller
      */
     public function update(Request $request, Project $project)
     {
-        if (Auth::check()) {
-            $request->validate([
-                'description' => ['required', new MinWordsCount(3)],
-                'needed_students' => 'required|numeric|between:3,6',
-            ]);
+        $request->validate([
+            'description' => ['required', new MinWordsCount(3)],
+            'needed_students' => 'required|numeric|between:3,6',
+        ]);
 
-            $project->description = $request->description;
-            $project->needed_students = $request->needed_students;
-            $project->update();
+        $project->description = $request->description;
+        $project->needed_students = $request->needed_students;
+        $project->update();
 
-            return redirect('/dispatch')->with('success', 'Project created successfully');
-        } else
-            return redirect('login')->withErrors('You are not allowed to access');
+        return redirect('/dispatch')->with('success', 'Project created successfully');
+
     }
 
     /**

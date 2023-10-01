@@ -8,6 +8,11 @@ use Illuminate\Support\Facades\Auth;
 
 class InpDetailController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth')->only(['show']);
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -37,12 +42,10 @@ class InpDetailController extends Controller
      */
     public function show(string $id)
     {
-        if(Auth::check()){
-            $user = User::find($id);
-            $projects = $user->project;
-            return view('inp.inp_details', compact(['user', 'projects']));
-        } else
-            return redirect('login')->withErrors('You are not allowed to access');
+        $user = User::find($id);
+        $projects = $user->project;
+        return view('inp.inp_details', compact(['user', 'projects']));
+
     }
 
     /**

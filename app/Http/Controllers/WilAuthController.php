@@ -15,6 +15,11 @@ use Illuminate\Validation\Rule;
 
 class WilAuthController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth')->only(['dispatch', 'changeProfile']);
+    }
+
     //
     public function index()
     {
@@ -31,7 +36,7 @@ class WilAuthController extends Controller
         $input = $request->only('email', 'password');
         $fieldType = filter_var($request->email, FILTER_VALIDATE_EMAIL) ? 'email' : 'name';
         $credentials = array($fieldType => $input['email'], 'password' => $input['password']);
-        if(auth()->attempt($credentials)) {
+        if (auth()->attempt($credentials)) {
             $request->session()->regenerate();
             return redirect()->intended('/dispatch')->with('success', 'Signed in');
         }
@@ -73,43 +78,43 @@ class WilAuthController extends Controller
 
     public function dispatch()
     {
-        if(Auth::check()){
-            switch (Auth::user()['user_type']) {
-                case config('_global.teacher'):
-                    $inps = User::where('user_type', config('_global.inp'))->paginate(config('_global.items_per_page'));
-                    return view('teacher.dashboard', compact('inps'));
-                case config('_global.inp'):
-                    $inps = User::where('user_type', config('_global.inp'))->paginate(config('_global.items_per_page'));
-                    return view('inp.dashboard', compact('inps'));
-                case config('_global.student'):
-                    $student = User::where('user_type', config('_global.student'))->get();
-                    return view('student.dashboard', compact('student'));
-                default: return view('dashboard');
-            }
+        switch (Auth::user()['user_type']) {
+            case config('_global.teacher'):
+                $inps = User::where('user_type', config('_global.inp'))->paginate(config('_global.items_per_page'));
+                return view('teacher.dashboard', compact('inps'));
+            case config('_global.inp'):
+                $inps = User::where('user_type', config('_global.inp'))->paginate(config('_global.items_per_page'));
+                return view('inp.dashboard', compact('inps'));
+            case config('_global.student'):
+                $student = User::where('user_type', config('_global.student'))->get();
+                return view('student.dashboard', compact('student'));
+            default:
+                return view('dashboard');
         }
-
-        return redirect('login')->withErrors('You are not allowed to access');
     }
 
-    public function changeProfile() {
-        if(Auth::check()){
+    public function changeProfile()
+    {
+        if (Auth::check()) {
             $user = Auth::user();
             switch ($user->user_type) {
                 case config('_global.teacher'):
                     $name = $user->name;
-                    return view ('teacher.change_profile', compact('name'));
+                    return view('teacher.change_profile', compact('name'));
                 case config('_global.inp'):
-                    return view ('inp.change_profile', compact('user'));
+                    return view('inp.change_profile', compact('user'));
                 case config('_global.student'):
                     break;
-                default: return view('dashboard');
+                default:
+                    return view('dashboard');
             }
         }
 
         return redirect('login')->withErrors('You are not allowed to access');
     }
 
-    public function profileChanging(Request $request) {
+    public function profileChanging(Request $request)
+    {
         $request->validate([
             'email' => ['email'],
             'prev-password' => ['required', new CheckOldPassword()],
@@ -131,7 +136,8 @@ class WilAuthController extends Controller
         return Redirect('/');
     }
 
-    public function signOut(Request $request) {
+    public function signOut(Request $request)
+    {
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
@@ -140,18 +146,23 @@ class WilAuthController extends Controller
         return Redirect('/');
     }
 
-    public static function getUserType(User $user) {
+    public static function getUserType(User $user)
+    {
         if ($user->name === config('_global.teacher'))
             return config('_global.teacher');
 
         switch ($user->user_type) {
-            case config('_global.inp'): return config('_global.inp');
-            case config('_global.student'): return config('_global.student');
-            default: return config('_global.nau'); // Not Applicable
+            case config('_global.inp'):
+                return config('_global.inp');
+            case config('_global.student'):
+                return config('_global.student');
+            default:
+                return config('_global.nau'); // Not Applicable
         }
     }
 
-    public static function approveInps() {
+    public static function approveInps()
+    {
         $inps = User::where('user_type', config('_global.inp'))->where('approved', false)->paginate(config('_global.items_per_page'));
         if ($inps->currentPage() > $inps->lastPage()) {
             $url = $inps->path() . '?page=' . $inps->lastPage();
@@ -160,7 +171,8 @@ class WilAuthController extends Controller
         return view('teacher.approve_inps', compact('inps'));
     }
 
-    public static function approveInp(Request $request) {
+    public static function approveInp(Request $request)
+    {
         $user_id = $request->user_id;
         $user = User::find($user_id);
         $user->approved = true;

@@ -24,7 +24,7 @@
                 @else
                     <li class="nav-item">
                         <span class="nav-link">
-                            @if (Auth::user()['approved'])
+                            @if (Auth::user()['approved'] or Auth::user()['user_type'] != "InP")
                                 {{ Auth::user()['name'] ?? "no auth::user" }}
                             @else
                                 <span class="bg-danger text-white p-1">{{ Auth::user()['name'] ?? "no auth::user" }}</span>
