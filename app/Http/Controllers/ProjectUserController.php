@@ -66,4 +66,11 @@ class ProjectUserController extends Controller
     {
         //
     }
+
+    public function apply(Request $request) {
+        $request->validate([
+            'justification' => 'required',
+        ]);
+        return redirect('/apply_to_projects');
+    }
 }

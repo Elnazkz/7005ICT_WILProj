@@ -23,8 +23,18 @@
                                 @csrf
                                 <input type="hidden" name="user_id" value="{{ $student->id }}">
                                 <tr>
-                                    <th scope="row">{{ $project->year }}</th>
-                                    <th scope="row">{{ $project->trimester }}</th>
+                                    @if ($project->year !== $year)
+                                        <th scope="row">{{ $project->year }}</th>
+                                        @php($year = $project->year)
+                                    @else
+                                        <th scope="row">{{ " " }}</th>
+                                    @endif
+                                    @if ($project->trimester !== $trimester)
+                                        <th scope="row">{{ $project->trimester }}</th>
+                                        @php($trimester = $project->trimester)
+                                    @else
+                                        <th scope="row">{{ " " }}</th>
+                                    @endif
                                     <th scope="row">{{ $project->title }}</th>
                                     <td class="text-left">{{ $project->description }}</td>
                                     <td class="text-center">
@@ -35,7 +45,6 @@
                                             </button>
                                         @endif
                                     </td>
-
                                 </tr>
                             </form>
                         @endforeach

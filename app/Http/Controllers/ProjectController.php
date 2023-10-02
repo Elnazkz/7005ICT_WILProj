@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Project;
+use App\Models\ProjectUser;
 use App\Models\User;
 use App\Rules\MinWordsCount;
 use Illuminate\Http\Request;
@@ -150,6 +151,17 @@ class ProjectController extends Controller
     }
 
     public function apply_to_project(Project $project) {
-        return view('/student.project_details', compact('project'));
+        $student = Auth::user();
+        $project_user = ProjectUser::where('user_id', $student->id)->first();
+        return view('/student.project_details', compact('project', 'project_user', 'student'));
+    }
+
+    public function apply_to_projects() {
+        User::user_approve();
+        $projects = Project::selectRaw('*')->orderBy('year', 'desc')->orderBy('trimester', 'desc')
+            ->groupBy('year')->groupBy('trimester')
+            ->paginate(config('_global.items_per_page'));
+        $student = Auth::user();
+        return view('student.projects_page', compact('projects', 'student'));
     }
 }

@@ -15,22 +15,12 @@
                         </thead>
                         <tbody>
                         @foreach($inps as $inp)
-                            <form method="get" action="/apply_to_project/" {{ .  }}>
-                                @csrf
-                                <input type="hidden" name="user_id" value="{{ $inp->id }}">
-                                <tr>
-                                    <th scope="row">{{ $inp->name }}</th>
-                                    <td class="text-left">{{ $inp->email }}</td>
-                                    <td class="text-center">
-                                        @if ($student->approved)
-                                            <button type="submit" class="btn btn-primary">Apply</button>
-                                        @else
-{{--                                            <button type="submit" class="btn btn-primary" disabled>Apply</button>--}}
-                                        @endif
-                                    </td>
-
-                                </tr>
-                            </form>
+                            <tr>
+                                <th scope="row">{{ $inp->name }}</th>
+                                <td class="text-left">{{ $inp->email }}</td>
+                                <td class="text-center">
+                                </td>
+                            </tr>
                         @endforeach
                         </tbody>
                     </table>

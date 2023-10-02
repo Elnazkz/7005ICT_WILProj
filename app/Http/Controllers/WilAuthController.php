@@ -90,12 +90,8 @@ class WilAuthController extends Controller
                 $inps = User::where('user_type', config('_global.inp'))->paginate(config('_global.items_per_page'));
                 return view('inp.dashboard', compact('inps'));
             case config('_global.student'):
-                User::user_approve();
-                $projects = Project::selectRaw('*')->orderBy('year', 'desc')->orderBy('trimester', 'desc')
-                    ->groupBy('year')->groupBy('trimester')
-                    ->paginate(config('_global.items_per_page'));
-                $student = Auth::user();
-                return view('student.projects_page', compact('projects', 'student'));
+                $inps = User::where('user_type', config('_global.inp'))->paginate(config('_global.items_per_page'));
+                return view('student.dashboard', compact('inps'));
             default:
                 return $this->signout(); //view('dashboard');
         }

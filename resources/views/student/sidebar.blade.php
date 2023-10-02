@@ -11,6 +11,12 @@
                 Home
             </a>
         </li>
+        <li class="nav-item">
+            <a href="/apply_to_projects" class="nav-link link-body-emphasis" aria-current="page">
+                <img class="bi pe-none me-2" width="16" height="16" src="{{ asset('svgs/box-arrow-right.svg') }}" alt="Apply to projects" />
+                Apply for projects
+            </a>
+        </li>
         <li>
             <a href="/change-profile" class="nav-link link-body-emphasis">
                 <div class="d-flex flex-nowrap align-items-center">
@@ -21,4 +27,3 @@
         </li>
     </ul>
 </div>
-
