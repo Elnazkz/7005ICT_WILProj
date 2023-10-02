@@ -23,8 +23,6 @@ class ProjectController extends Controller
      */
     public function index()
     {
-        User::user_approve();
-
         $projects = Project::selectRaw('*')->orderBy('year', 'desc')->orderBy('trimester', 'desc')
             ->groupBy('year')->groupBy('trimester')
             ->paginate(config('_global.items_per_page'));
