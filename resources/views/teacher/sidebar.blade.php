@@ -12,6 +12,12 @@
             </a>
         </li>
         <li class="nav-item">
+            <a href="/projects" class="nav-link link-body-emphasis" aria-current="page">
+                <img class="bi pe-none me-2" width="16" height="16" src="{{ asset('svgs/box-arrow-right.svg') }}" alt="Projects Lists" />
+                Projects
+            </a>
+        </li>
+        <li class="nav-item">
             <a href="/profiles" class="nav-link link-body-emphasis" aria-current="page">
                 <img class="bi pe-none me-2" width="16" height="16" src="{{ asset('svgs/person-lines-fill.svg') }}" alt="Student Profile" />
                 Student's Profiles

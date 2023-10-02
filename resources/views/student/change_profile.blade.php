@@ -78,6 +78,9 @@
                                 @empty
                                     <h2>Database error !!!</h2>
                                 @endforelse
+                                @if ($errors->has('new_roles'))
+                                    <span class="text-danger">{{ $errors->first('new_roles') }}</span>
+                                @endif
 {{--                                <div class="form-check mb-3">--}}
 {{--                                    <input class="form-check-input" type="checkbox" id="1" name="1" value="">--}}
 {{--                                    <label class="form-check-label" for="1">software developer</label>--}}

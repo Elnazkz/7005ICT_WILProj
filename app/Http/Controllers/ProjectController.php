@@ -23,7 +23,23 @@ class ProjectController extends Controller
      */
     public function index()
     {
-        //
+        User::user_approve();
+
+        $projects = Project::selectRaw('*')->orderBy('year', 'desc')->orderBy('trimester', 'desc')
+            ->groupBy('year')->groupBy('trimester')
+            ->paginate(config('_global.items_per_page'));
+
+        $user = Auth::user();
+        $is_student = WilAuthController::get_usertype($user) == config('_global.student');
+        switch (WilAuthController::get_usertype($user)) {
+            case config('_global.teacher'):
+                return view('teacher.projects_page', compact('projects', 'user', 'is_student'));
+            case config('_global.student'):
+                return view('student.projects_page', compact('projects', 'user', 'is_student'));
+            case config('_global.inp'):
+                return view('inp.projects_page', compact('projects', 'user', 'is_student'));
+
+        }
     }
 
     /**
@@ -154,14 +170,5 @@ class ProjectController extends Controller
         $student = Auth::user();
         $project_user = ProjectUser::where('user_id', $student->id)->first();
         return view('/student.project_details', compact('project', 'project_user', 'student'));
-    }
-
-    public function apply_to_projects() {
-        User::user_approve();
-        $projects = Project::selectRaw('*')->orderBy('year', 'desc')->orderBy('trimester', 'desc')
-            ->groupBy('year')->groupBy('trimester')
-            ->paginate(config('_global.items_per_page'));
-        $student = Auth::user();
-        return view('student.projects_page', compact('projects', 'student'));
     }
 }

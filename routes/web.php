@@ -46,7 +46,7 @@ Route::post('/project_update/{project}', [ProjectController::class, 'update']);
 Route::get('/project_del/{project}', [ProjectController::class, 'destroy']);
 Route::post('/project_image', [ProjectController::class, 'store_image']);
 Route::post('/project_file', [ProjectController::class, 'store_file']);
-Route::get('/apply_to_projects', [ProjectController::class, 'apply_to_projects']);
+Route::get('/projects', [ProjectController::class, 'index']);
 Route::get('/apply_to_project/{project}', [ProjectController::class, 'apply_to_project']);
 Route::post('/project_user_update', [ProjectUserController::class, 'apply']);
 

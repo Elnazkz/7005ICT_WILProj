@@ -121,6 +121,7 @@ class WilAuthController extends Controller
             'password' => ['exclude_without:prev_password', 'required', 'min:6'],
             'password_confirmation' => ['exclude_without:prev_password', 'same:password'],
             'gpa' => ['exclude_without:gpa', 'required', 'integer', 'between:0,7'],
+            'new_roles' => ['required', 'min:1']
         ]);
 
         $user = Auth::user();

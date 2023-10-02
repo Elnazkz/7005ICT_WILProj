@@ -29,7 +29,7 @@
                             @else
                                 <span class="bg-danger text-white p-1">{{ Auth::user()['name'] ?? "no auth::user" }}</span>
                             @endif
-                            ({{ \App\Http\Controllers\WilAuthController::getUserType(Auth::user()) }})
+                            ({{ \App\Http\Controllers\WilAuthController::get_usertype(Auth::user()) }})
                         </span>
                     </li>
                     <li class="nav-item">

@@ -12,9 +12,9 @@
             </a>
         </li>
         <li class="nav-item">
-            <a href="/apply_to_projects" class="nav-link link-body-emphasis" aria-current="page">
-                <img class="bi pe-none me-2" width="16" height="16" src="{{ asset('svgs/box-arrow-right.svg') }}" alt="Apply to projects" />
-                Apply for projects
+            <a href="/projects" class="nav-link link-body-emphasis" aria-current="page">
+                <img class="bi pe-none me-2" width="16" height="16" src="{{ asset('svgs/box-arrow-right.svg') }}" alt="Projects" />
+                Projects
             </a>
         </li>
         <li>
