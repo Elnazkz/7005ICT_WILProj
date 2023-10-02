@@ -5,7 +5,8 @@
             <div class="row justify-content-center">
                     <ul class="list-group">
                         @forelse($students as $student)
-                            <li class="list-group-item mb-2 {{ $student->approved ? 'list-group-item-primary' : 'list-group-item-danger' }}"> name: {{ $student->name }},
+                            <li class="list-group-item mb-2 {{ $student->approved ? 'list-group-item-primary' : 'list-group-item-danger' }}">
+                                name: <a href="/profile/{{$student->id}}">{{ $student->name }}</a> ,
                                 @if (isset($student->profile->gpa))
                                     GPA: {{ $student->profile->gpa }}
                                 @else

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Profile;
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -42,9 +43,15 @@ class ProfileController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Profile $profile)
+    public function show(String $user_id)
     {
-        //
+        $student = User::where('id', $user_id)
+            ->with('user_roles')
+            ->get();
+        $user = $student[0];
+        $user_roles = $user->user_roles()->get();
+        $roles = Role::get();
+        return view('teacher.profile', compact('user', 'user_roles', 'roles'));
     }
 
     /**

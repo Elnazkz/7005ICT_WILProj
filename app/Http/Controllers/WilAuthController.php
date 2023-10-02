@@ -109,7 +109,7 @@ class WilAuthController extends Controller
             case config('_global.student'):
                 $user_roles = $user->user_roles()->get();
                 $roles = Role::get();
-                return view('student.change_profile', compact('user', 'user_roles', 'roles'));
+                return view('student.profile', compact('user', 'user_roles', 'roles'));
             default:
                 return $this->signout(); //view('dashboard');
         }

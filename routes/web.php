@@ -35,10 +35,11 @@ Route::post('/approve-inp', [WilAuthController::class, 'approve_inp']);
 Route::get('/approve-inps', [WilAuthController::class, 'approve_inps']);
 
 Route::get('/profiles', [ProfileController::class, 'index']);
+Route::get('/profile/{user_id}', [ProfileController::class, 'show']);
 
 Route::get('/inp-details/{id}', [InpDetailController::class, 'show']);
 
-Route::get('/proj-details/{project_id}', [ProjectController::class, 'index']);
+Route::get('/proj-details/{project_id}', [ProjectController::class, 'show']);
 Route::get('/create-project', [ProjectController::class, 'create']);
 Route::post('/project_creation', [ProjectController::class, 'store']);
 Route::get('/project_show/{project}', [ProjectController::class, 'show']);
