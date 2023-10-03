@@ -90,6 +90,7 @@ class WilAuthController extends Controller
                 $inps = User::where('user_type', config('_global.inp'))->paginate(config('_global.items_per_page'));
                 return view('inp.dashboard', compact('inps'));
             case config('_global.student'):
+                User::user_approve();
                 $inps = User::where('user_type', config('_global.inp'))->paginate(config('_global.items_per_page'));
                 return view('student.dashboard', compact('inps'));
             default:
@@ -126,7 +127,7 @@ class WilAuthController extends Controller
 
         $user = Auth::user();
         $password_changed = false;
-        if (isset($request->prev_password) and ($request->prev_password !== null)) {
+        if (isset($request->prev_password) && ($request->prev_password !== null)) {
             $user->password = Hash::make($request->password);
             $user->save();
             $password_changed = true;
@@ -135,13 +136,13 @@ class WilAuthController extends Controller
         $gpa_changed = false;
         $profile = $user->profile;
         if ($profile !== null) {
-            if (isset($request->gpa) and ($request->gpa !== null) and ($request->gpa !== $profile->gpa)) {
+            if (isset($request->gpa) && ($request->gpa !== null) && ($request->gpa !== $profile->gpa)) {
                 $profile->gpa = $request->gpa;
                 $profile->save();
                 $gpa_changed = true;
             }
         } else {
-            if (isset($request->gpa) and ($request->gpa !== null)) {
+            if (isset($request->gpa) && ($request->gpa !== null)) {
                 $profile = new Profile();
                 $profile->gpa = $request->gpa;
                 $profile->user_id = $user->id;
@@ -186,7 +187,7 @@ class WilAuthController extends Controller
 
         $user = Auth::user();
         $password_changed = false;
-        if (isset($request->prev_password) and ($request->prev_password !== null)) {
+        if (isset($request->prev_password) && ($request->prev_password !== null)) {
             $user->password = Hash::make($request->password);
             $password_changed = true;
         }

@@ -1,5 +1,6 @@
 @extends('teacher.layout')
 @section('teacher_content')
+
     <div class="p-2 align-self-stretch w-100">
         <div class="d-flex flex-column p-3 h-100">
             <div class="row justify-content-center">
@@ -15,13 +16,20 @@
                         <tbody>
                         @foreach($inps as $inp)
                             <tr>
-                                <th scope="row">{{ $inp->name }}</th>
+                                <th scope="row">
+                                    @if ($inp->approved)
+                                        <a href=" {{ '/inp-details/' . $inp->id }} "> {{ $inp->name }} </a>
+                                    @else
+                                        {{ $inp->name }}
+                                    @endif
+                                </th>
                                 <td class="text-center">
                                     <img class="bi pe-none me-2" width="22" height="22"
-                                         src="{{ $inp->approved ? asset('svgs/cart-check.svg') : asset('svgs/cart.svg') }}" alt="Not Approved" />
+                                         src="{{ $inp->approved ? asset('svgs/cart-check.svg') : asset('svgs/cart.svg') }}"
+                                         alt="Not Approved"/>
                                 </td>
                             </tr>
-                            @endforeach
+                        @endforeach
                         </tbody>
                     </table>
                     <div class="d-flex justify-content-center">

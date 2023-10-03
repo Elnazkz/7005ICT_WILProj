@@ -14,7 +14,7 @@
                         </thead>
                         <tbody>
                         @foreach($inps as $inp)
-                            <form method="post" action="{{ url('/approve-inp', $inp->ip) }}">
+                            <form method="post" action="{{ url('/approve-inp', $inp->id) }}">
                                 @csrf
                                 <input type="hidden" name="user_id" value="{{ $inp->id }}">
                                 <tr>

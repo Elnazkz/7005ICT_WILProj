@@ -42,10 +42,22 @@ class InpDetailController extends Controller
      */
     public function show(string $id)
     {
-        $user = User::find($id);
-        $projects = $user->project;
-        return view('inp.inp_details', compact(['user', 'projects']));
-
+        switch (Auth::user()['user_type']) {
+            case config('_global.teacher'):
+                $user = User::find($id);
+                $projects = $user->project;
+                return view('teacher.inp_details', compact(['user', 'projects']));
+            case config('_global.inp'):
+                $user = User::find($id);
+                $projects = $user->project;
+                return view('inp.inp_details', compact(['user', 'projects']));
+            case config('_global.student'):
+                $user = User::find($id);
+                $projects = $user->project;
+                return view('student.inp_details', compact(['user', 'projects']));
+            default:
+                return $this->signout(); //view('dashboard');
+        }
     }
 
     /**

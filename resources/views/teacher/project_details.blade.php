@@ -1,6 +1,6 @@
-@extends('student.layout')
+@extends('teacher.layout')
 
-@section('student_content')
+@section('teacher_content')
     <div class="w-100">
 
         <div class="w-100">

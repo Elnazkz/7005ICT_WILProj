@@ -24,4 +24,9 @@ class ProjectUser extends Model
     public function user() {
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
+
+    public static function project_isapplied($user_id, $project_id) {
+        $cnt = ProjectUser::where('user_id', $user_id)->where('project_id', $project_id)->get()->count();
+        return $cnt !== 0;
+    }
 }

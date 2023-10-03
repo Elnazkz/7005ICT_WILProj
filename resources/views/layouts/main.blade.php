@@ -24,12 +24,12 @@
                 @else
                     <li class="nav-item">
                         <span class="nav-link">
-                            @if ((Auth::user()['user_type'] == config('_global.teacher')) or Auth::user()['approved'])
+                            @if ((Auth::user()['user_type'] == config('_global.teacher')) || Auth::user()['approved'])
                                 {{ Auth::user()['name'] ?? "no auth::user" }}
                             @else
                                 <span class="bg-danger text-white p-1">{{ Auth::user()['name'] ?? "no auth::user" }}</span>
                             @endif
-                            ({{ \App\Http\Controllers\WilAuthController::get_usertype(Auth::user()) }})
+                            ( {{ \App\Http\Controllers\WilAuthController::get_usertype(Auth::user()) }} )
                         </span>
                     </li>
                     <li class="nav-item">

@@ -78,7 +78,7 @@ class User extends Authenticatable
         if ($user->user_type = config('_global.student')) {
             $prof_cnt = $user->profile()->count();
             $user_role_cnt = $user->user_roles()->count();
-            $user->approved = ($prof_cnt > 0) and ($user_role_cnt > 0);
+            $user->approved = ($prof_cnt > 0) && ($user_role_cnt > 0);
             $user->save();
         }
     }

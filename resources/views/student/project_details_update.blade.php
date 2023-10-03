@@ -65,7 +65,7 @@
                     <input type="text" name="project_user_id" value="{{ $project_user->id }}" hidden>
                 @endif
                 <label for="needed_students" class="form-label">Justification</label>
-                <textarea type="text" class="form-control" id="justification" name="justification" rows="3" autofocus></textarea>
+                <textarea type="text" class="form-control" id="justification" name="justification" rows="3" autofocus>{{ $project_user !== null ? $project_user->justification_note : '' }}</textarea>
                 @if ($errors->has('justification'))
                     <span class="text-danger">{{ $errors->first('justification') }}</span>
                 @endif

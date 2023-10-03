@@ -71,6 +71,19 @@ class ProjectUserController extends Controller
         $request->validate([
             'justification' => 'required',
         ]);
-        return redirect('/apply_to_projects');
+
+        if (!isset($request->project_user_id)) {
+            $project_user = new ProjectUser();
+            $project_user->user_id = $request->user_id;
+            $project_user->project_id = $request->project_id;
+            $project_user->justification_note = $request->justification;
+            $project_user->assigned = false;
+            $project_user->save();
+        } else {
+            $project_user = ProjectUser::find($request->project_user_id)->first();
+            $project_user->justification_note = $request->justification;
+            $project_user->update();
+        }
+        return redirect('/projects');
     }
 }

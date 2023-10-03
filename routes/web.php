@@ -49,7 +49,9 @@ Route::post('/project_image', [ProjectController::class, 'store_image']);
 Route::post('/project_file', [ProjectController::class, 'store_file']);
 Route::get('/projects', [ProjectController::class, 'index']);
 Route::get('/apply_to_project/{project}', [ProjectController::class, 'apply_to_project']);
+Route::get('/unapply_to_project/{project}', [ProjectController::class, 'unapply_to_project']);
 Route::post('/project_user_update', [ProjectUserController::class, 'apply']);
+Route::get('/project_page/{project}', [ProjectController::class, 'show_page']);
 
 // Default home route
 Route::get('/', [WilAuthController::class, 'dispatch'])->name('home');

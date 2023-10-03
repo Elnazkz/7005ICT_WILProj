@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Rules\MinWordsCount;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
 class ProjectController extends Controller
@@ -28,6 +29,9 @@ class ProjectController extends Controller
             ->paginate(config('_global.items_per_page'));
 
         $user = Auth::user();
+        // TODO $is_student is not needed
+        // that call student.project_page
+        // TODO always add default to switch
         $is_student = WilAuthController::get_usertype($user) == config('_global.student');
         switch (WilAuthController::get_usertype($user)) {
             case config('_global.teacher'):
@@ -87,11 +91,26 @@ class ProjectController extends Controller
     public function show(Project $project)
     {
         //$project = Project::where('projects.id', '=', $project_id)->first();
-        if (Auth::user()->id === $project->user_id)
-            return view('inp.project_details_editable', compact(['project']));
-        else
-            return view('inp.project_details', compact(['project']));
 
+        $user = Auth::user();
+        switch ($user->user_type) {
+            case config('_global.teacher'):
+                $student = Auth::user();
+                $project_user = ProjectUser::where('project_id', $project->id)->where('user_id', $student->id)->first();
+                return view('teacher.project_details', compact(['project', 'student', 'project_user']));
+            case config('_global.inp'):
+                if (Auth::user()->id === $project->user_id)
+                    return view('inp.project_details_editable', compact(['project']));
+                else
+                    return view('inp.project_details', compact(['project']));
+            case config('_global.student'):
+                $student = Auth::user();
+                $project_user = ProjectUser::where('project_id', $project->id)->where('user_id', $student->id)->first();
+                return view('student.project_details', compact(['project', 'student', 'project_user']));
+            default:
+                // TODO I'm not sure this will work
+                return $this->signout(); //view('dashboard');
+        }
     }
 
     /**
@@ -164,9 +183,52 @@ class ProjectController extends Controller
         return redirect('/dispatch')->with('success', 'Project created successfully');
     }
 
-    public function apply_to_project(Project $project) {
+    public function apply_to_project(Request $request, Project $project) {
         $student = Auth::user();
-        $project_user = ProjectUser::where('user_id', $student->id)->first();
-        return view('/student.project_details', compact('project', 'project_user', 'student'));
+        $project_user = ProjectUser::where('user_id', $student->id)->where('project_id', $project->id)->first();
+
+        if ($project_user !== null) {
+            return view('/student.project_details_update', compact('project', 'project_user', 'student'));
+        } else {
+            $data = $request->all();
+            $data['count'] = ProjectUser::where('user_id', $student->id)->get()->count();
+            Validator::make($data, [
+                'count' => 'integer|max:2',
+            ])->validate();
+
+            return view('/student.project_details', compact('project', 'project_user', 'student'));
+        }
+    }
+
+    public function unapply_to_project(Project $project) {
+        $student = Auth::user();
+        $project_user = ProjectUser::where('user_id', $student->id)->where('project_id', $project->id)->first();
+
+        $project_user?->delete();
+        return $this->index();
+    }
+
+    public function show_page(Project $project) {
+        $user = Auth::user();
+        switch ($user->user_type) {
+            case config('_global.teacher'):
+                $student = Auth::user();
+                $inp = $project->user()->first();
+                $project_user = ProjectUser::where('project_id', $project->id)->where('user_id', $student->id)->first();
+                return view('teacher.project_page', compact(['project', 'student', 'project_user', 'inp']));
+            case config('_global.inp'):
+                $student = Auth::user();
+                $inp = $project->user()->first();
+                $project_user = ProjectUser::where('project_id', $project->id)->where('user_id', $student->id)->first();
+                return view('inp.project_page', compact(['project', 'student', 'project_user', 'inp']));
+            case config('_global.student'):
+                $student = Auth::user();
+                $inp = $project->user()->first();
+                $project_user = ProjectUser::where('project_id', $project->id)->where('user_id', $student->id)->first();
+                return view('student.project_page', compact(['project', 'student', 'project_user', 'inp']));
+            default:
+                // TODO I'm not sure this will work
+                return $this->signout(); //view('dashboard');
+        }
     }
 }

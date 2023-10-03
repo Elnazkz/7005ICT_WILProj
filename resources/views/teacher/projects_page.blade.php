@@ -35,7 +35,7 @@
                                         <th scope="row">{{ " " }}</th>
                                     @endif
                                     <th scope="row">
-                                        <a href="{{ '/project_show/' . $project->id }}">{{ $project->title }}</a>
+                                        <a href="{{ '/project_page/' . $project->id }}">{{ $project->title }}</a>
                                     </th>
                                     <td class="text-center">
                                         @if ($is_student and $user->approved)

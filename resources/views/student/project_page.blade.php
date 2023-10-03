@@ -2,13 +2,13 @@
 
 @section('student_content')
     <div class="w-100">
-
         <div class="w-100">
-            <div class="d-flex w-100">
-                <div class="card border-primary mb-3 w-100">
-                    <div class="card-body text-primary">
-                        <h5 class="card-title">{{ $student->name }}</h5>
-                    </div>
+
+            <div class="card border-primary mb-3">
+                <div class="card-header">Industry partner (InP)</div>
+                <div class="card-body text-primary">
+                    <h5 class="card-title">{{ $inp->name }}</h5>
+                    <p class="card-text">{{ $inp->email }}</p>
                 </div>
             </div>
 
@@ -52,28 +52,6 @@
                     </div>
                 </form>
             </div>
-        </div>
-
-
-        <br>
-        <div>
-            <form method="post" action="/project_user_update">
-                @csrf
-                <input type="text" name="user_id" value="{{ $student->id }}" hidden>
-                <input type="text" name="project_id" value="{{ $project->id }}" hidden>
-                @if ($project_user !== null)
-                    <input type="text" name="project_user_id" value="{{ $project_user->id }}" hidden>
-                @endif
-                <label for="needed_students" class="form-label">Justification</label>
-                <textarea type="text" class="form-control" id="justification" name="justification" rows="3" autofocus></textarea>
-                @if ($errors->has('justification'))
-                    <span class="text-danger">{{ $errors->first('justification') }}</span>
-                @endif
-                <br>
-                <button type="submit" class="btn btn-primary">
-                    Submit
-                </button>
-            </form>
         </div>
     </div>
 @endsection

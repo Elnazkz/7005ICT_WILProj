@@ -21,7 +21,7 @@ return new class extends Migration
             $table->foreign('project_id')->references('id')->on('projects');
             $table->timestamps();
 
-            $table->unique('user_id', 'project_id');
+            $table->unique(['user_id', 'project_id']);
         });
     }
 
