@@ -50,6 +50,34 @@
                             </div>
                         </div>
                     </div>
+                    <div class="mb-1">
+                        <label for="description" class="col-sm-2 col-form-label">Students</label>
+                        @forelse($project->project_users as $project_application)
+                            <ul>
+                                <li>{{ 'Name: ' .$project_application->user->name}} <br> {{'Note: '.$project_application->justification_note }}</li>
+                            </ul>
+                        @empty
+                            No Students have applied yet!
+                        @endforelse
+                    </div>
+                    <div class="mb-1">
+                        <label class="col-sm-2 col-form-label">Pictures</label>
+                        <br>
+                        @forelse($project->project_images as $image)
+                            <img src="{{ url($image->file_path) }}" alt="{{$image->name}}" width="200px">
+                        @empty
+                            No Images!
+                        @endforelse
+                    </div>
+                    <div class="mb-1">
+                        <label class="col-sm-2 col-form-label">Files</label>
+                        <br>
+                        @forelse($project->project_files as $file)
+                            <a href="{{ url($file->file_path) }}" download="">{{ $file->name }}</a>
+                        @empty
+                            No Files!
+                        @endforelse
+                    </div>
                 </form>
             </div>
         </div>
