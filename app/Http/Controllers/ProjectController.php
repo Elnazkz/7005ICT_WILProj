@@ -84,6 +84,59 @@ class ProjectController extends Controller
         $project->contact_email = $request->contact_email;
         $project->save();
 
+        $images = $request->file('images');
+
+        if ($images) {
+            $validator = Validator::make($request->all(), [
+                'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048'
+            ]);
+
+            if ($validator->fails()) {
+                return redirect()
+                    ->back()
+                    ->withErrors($validator)
+                    ->withInput();
+            }
+
+            foreach ($images as $image) {
+                $name = $request->project_id . $image->getClientOriginalName();
+                $image_path = $image->storeAs('public/images', $name);
+
+                $projectImage = new ProjectImage();
+                $projectImage->file_path = $image_path;
+                $projectImage->project_id = $project->id;
+                $projectImage->name = $name;
+                $projectImage->save();
+            }
+        }
+
+        $files = $request->file('pdfs');
+
+        if ($files) {
+            $validator = Validator::make($request->all(), [
+                'pdfs.*' => 'mimetypes:application/pdf|max:10000'
+            ]);
+
+
+            if ($validator->fails()) {
+                return redirect()
+                    ->back()
+                    ->withErrors($validator)
+                    ->withInput();
+            }
+
+            foreach ($files as $file) {
+                $name = $request->project_id . $file->getClientOriginalName();
+                $pdf_path = $file->storeAs('public/files', $name);
+
+                $projectPdf = new ProjectFile();
+                $projectPdf->file_path = $pdf_path;
+                $projectPdf->project_id = $project->id;
+                $projectPdf->name = $name;
+                $projectPdf->save();
+            }
+        }
+
         return redirect('/dispatch')->with('success', 'Project created successfully');
 
     }
@@ -165,57 +218,82 @@ class ProjectController extends Controller
     public function destroy(Project $project)
     {
         $project_id = $project->id;
-        if ($project->project_users()->where('project_id',$project_id)->get()->isEmpty()) {
+        if ($project->project_users()->where('project_id', $project_id)->get()->isEmpty()) {
             Project::find($project_id)->delete();
             return redirect('/dispatch')->with('success', 'Project created successfully');
-        }else {
-            return redirect('/project_show/'.$project_id)->with('error', 'Project can not be deleted. Students have applied on this project.');
+        } else {
+            return redirect('/project_show/' . $project_id)->with('error', 'Project can not be deleted. Students have applied on this project.');
         }
     }
 
     public function store_image(Request $request)
     {
-        $this->validate($request, [
-            'image' => 'required|image|mimes:jpg,png,jpeg,gif,svg|max:2048',
+
+        $validator = Validator::make($request->all(), [
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 
-        $name = $request->project_id . "_project_image_".now();
-        $image_path = $request->file('image')->storeAs('images',$name);
+        if ($validator->fails()) {
+            return redirect()
+                ->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
 
-        $projectImage = new ProjectImage();
-        $projectImage->file_path = $image_path;
-        $projectImage->project_id = $request->project_id;
-        $projectImage->name = $name;
-        $projectImage->save();
+        $images = $request->file('images');
 
-        return redirect()->back()->with(['success'=> 'Image uploaded successfully', 'image' => $projectImage]);
+        foreach ($images as $image) {
+            $name = $request->project_id . $image->getClientOriginalName();
+            $image_path = $image->storeAs('public/images', $name);
+
+            $projectImage = new ProjectImage();
+            $projectImage->file_path = $image_path;
+            $projectImage->project_id = $request->project_id;
+            $projectImage->name = $name;
+            $projectImage->save();
+        }
+
+        return redirect()->back()->with('success', 'Image uploaded successfully');
     }
 
     public function store_file(Request $request)
     {
-        $this->validate($request, [
-            'pdf' => 'required|mimetypes:application/pdf|max:10000',
+        $validator = Validator::make($request->all(), [
+            'pdfs.*' => 'mimetypes:application/pdf|max:10000'
         ]);
 
-        $name = $request->project_id . "_project_pdf_".now();
-        $pdf_path = $request->file('pdf')->storeAs('files',$name);
 
-        $projectPdf = new ProjectFile();
-        $projectPdf->file_path = $pdf_path;
-        $projectPdf->project_id = $request->project_id;
-        $projectPdf->name = $name;
-        $projectPdf->save();
+        if ($validator->fails()) {
+            return redirect()
+                ->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
 
-        return redirect()->back()->with(['success'=> 'File uploaded successfully']);
+        $files = $request->file('pdfs');
+
+        foreach ($files as $file) {
+            $name = $request->project_id . $file->getClientOriginalName();
+            $pdf_path = $file->storeAs('public/files', $name);
+
+            $projectPdf = new ProjectFile();
+            $projectPdf->file_path = $pdf_path;
+            $projectPdf->project_id = $request->project_id;
+            $projectPdf->name = $name;
+            $projectPdf->save();
+        }
+
+        return redirect()->back()->with(['success' => 'File uploaded successfully']);
     }
 
-    public function apply_to_project(Request $request, Project $project) {
+    public function apply_to_project(Request $request, Project $project)
+    {
         $student = Auth::user();
         $inp = $project->user()->first();
         $project_user = ProjectUser::where('user_id', $student->id)->where('project_id', $project->id)->first();
 
         if ($project_user !== null) {
-            return view('/student.project_details_update', compact('project', 'project_user', 'student','inp'));
+            return view('/student.project_details_update', compact('project', 'project_user', 'student', 'inp'));
         } else {
             $data = $request->all();
             $data['count'] = ProjectUser::where('user_id', $student->id)->get()->count();
@@ -223,11 +301,12 @@ class ProjectController extends Controller
                 'count' => 'integer|max:2',
             ])->validate();
 
-            return view('/student.project_details', compact('project', 'project_user', 'student','inp'));
+            return view('/student.project_details', compact('project', 'project_user', 'student', 'inp'));
         }
     }
 
-    public function unapply_to_project(Project $project) {
+    public function unapply_to_project(Project $project)
+    {
         $student = Auth::user();
         $project_user = ProjectUser::where('user_id', $student->id)->where('project_id', $project->id)->first();
 
@@ -235,7 +314,8 @@ class ProjectController extends Controller
         return $this->index();
     }
 
-    public function show_page(Project $project) {
+    public function show_page(Project $project)
+    {
         $user = Auth::user();
         switch ($user->user_type) {
             case config('_global.teacher'):

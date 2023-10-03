@@ -1,6 +1,15 @@
 @extends('inp.layout')
 @section('inp_content')
     <div class="w-100">
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
         @if(session('error'))
             <span class="text-danger">{{  session('error') }}</span>
         @endif
@@ -104,7 +113,7 @@
                     <label class="col-sm-2 col-form-label">Pictures</label>
                     <br>
                     @forelse($project->project_images as $image)
-                        <img src="{{ url($image->file_path) }}" alt="{{$image->name}}" width="200px">
+                        <img src="{{ asset('storage/images/'.$image->name) }}" alt="{{$image->name}}" width="200px">
                     @empty
                         No Images!
                     @endforelse
@@ -113,7 +122,7 @@
                     <label class="col-sm-2 col-form-label">Files</label>
                     <br>
                     @forelse($project->project_files as $file)
-                        <a href="{{ url($file->file_path) }}" download="">{{ $file->name }}</a>
+                        <a href="{{ asset('storage/files/'.$file->name) }}" download="">{{ $file->name }}</a>
                     @empty
                         No Files!
                     @endforelse
@@ -140,10 +149,10 @@
                 <input type="hidden" name="project_id" value="{{ $project->id }}">
 
                 <label>
-                    <span>Choose Image File</span>
-                    <input type="file" name="image"/>
-                    @if ($errors->has('image'))
-                        <span class="text-danger">{{ $errors->first('image') }}</span>
+                    <span>Choose Image Files</span>
+                    <input type="file" name="images[]" multiple/>
+                    @if ($errors->has('images'))
+                        <span class="text-danger">{{ $errors->first('images') }}</span>
                     @endif
                 </label>
                 <button type="submit">Submit</button>
@@ -158,10 +167,10 @@
                 <input type="hidden" name="project_id" value="{{ $project->id }}">
 
                 <label>
-                    <span>Choose PDF File</span>
-                    <input type="file" name="pdf"/>
-                    @if ($errors->has('pdf'))
-                        <span class="text-danger">{{ $errors->first('pdf') }}</span>
+                    <span>Choose PDF Files</span>
+                    <input type="file" name="pdfs[]"/>
+                    @if ($errors->has('pdfs'))
+                        <span class="text-danger">{{ $errors->first('pdfs') }}</span>
                     @endif
                 </label>
                 <button type="submit" >Submit</button>

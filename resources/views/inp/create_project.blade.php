@@ -1,6 +1,15 @@
 @extends('inp.layout')
 @section('inp_content')
     <div class="w-100">
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
         @if(session('error'))
             <span class="text-danger">{{  session('error') }}</span>
         @endif
@@ -82,30 +91,31 @@
                 </div>
 
                 <button type="submit" class="btn btn-primary mt-3 w-100">Create</button>
+                <br>
+                <br>
+
+                <div class="mb-1">
+                    <label>
+                        <span>Choose Image Files</span>
+                        <input type="file" name="images[]" multiple/>
+                        @if ($errors->has('images'))
+                            <span class="text-danger">{{ $errors->first('images') }}</span>
+                        @endif
+                    </label>
+                </div>
+                <br>
+
+                <div class="mb-1">
+                    <label>
+                        <span>Choose PDF Files</span>
+                        <input type="file" name="pdfs[]" multiple/>
+                        @if ($errors->has('pdfs'))
+                            <span class="text-danger">{{ $errors->first('pdfs') }}</span>
+                        @endif
+                    </label>
+                </div>
+
             </form>
         </div>
-        <br>
-
-        <div>
-            <label>
-                <span>Choose Image File</span>
-                <input type="file" name="image"/>
-                @if ($errors->has('image'))
-                    <span class="text-danger">{{ $errors->first('image') }}</span>
-                @endif
-            </label>
-        </div>
-        <br>
-
-        <div>
-            <label>
-                <span>Choose PDF File</span>
-                <input type="file" name="pdf"/>
-                @if ($errors->has('pdf'))
-                    <span class="text-danger">{{ $errors->first('pdf') }}</span>
-                @endif
-            </label>
-        </div>
-
     </div>
 @endsection
