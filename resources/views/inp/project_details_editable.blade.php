@@ -1,6 +1,12 @@
 @extends('inp.layout')
 @section('inp_content')
     <div class="w-100">
+        @if(session('error'))
+            <span class="text-danger">{{  session('error') }}</span>
+        @endif
+        @if(session('success'))
+            <span style="color: forestgreen">{{  session('success') }}</span>
+        @endif
         <div class="d-flex w-100">
             <div class="card border-primary mb-3 w-100">
                 <div class="card-body text-primary">
@@ -13,9 +19,25 @@
             <form class="w-100" action="{{ '/project_update/' . $project->id }}" method="post">
                 @csrf
                 <div class="mb-1">
+                    <label for="title" class="form-label">Contact Name</label>
+                    <input type="text" class="form-control" id="contact_name" name="contact_name"
+                           value="{{ @old('contact_name', $project->contact_name) }}">
+                    @if ($errors->has('contact_name'))
+                        <span class="text-danger">{{ $errors->first('contact_name') }}</span>
+                    @endif
+                </div>
+                <div class="mb-1">
+                    <label for="title" class="form-label">Contact Email</label>
+                    <input type="text" class="form-control" id="contact_email" name="contact_email"
+                           value="{{ @old('contact_email', $project->contact_email) }}">
+                    @if ($errors->has('contact_email'))
+                        <span class="text-danger">{{ $errors->first('contact_email') }}</span>
+                    @endif
+                </div>
+                <div class="mb-1">
                     <label for="title" class="form-label">Project Title</label>
                     <input type="text" class="form-control" id="title" name="title" autofocus
-                           value="{{ @old('title', $project->title) }}" disabled>
+                           value="{{ @old('title', $project->title) }}">
                     @if ($errors->has('title'))
                         <span class="text-danger">{{ $errors->first('title') }}</span>
                     @endif
@@ -23,7 +45,8 @@
                 <div class="mb-1">
                     <label for="description" class="col-sm-2 col-form-label">Description</label>
                     {{-- don't break textarea line--}}
-                    <textarea class="form-control" id="description" name="description" rows="3">{{ @old('description', $project->description) }}</textarea>
+                    <textarea class="form-control" id="description" name="description"
+                              rows="3">{{ @old('description', $project->description) }}</textarea>
                     @if ($errors->has('description'))
                         <span class="text-danger">{{ $errors->first('description') }}</span>
                     @endif
@@ -40,7 +63,7 @@
                     <div class="mb-1">
                         <label for="year" class="form-label">Year</label>
                         <input type="text" class="form-control" id="year" name="year"
-                               value="{{ @old('year', $project->year) }}" disabled>
+                               value="{{ @old('year', $project->year) }}">
                         @if ($errors->has('year'))
                             <span class="text-danger">{{ $errors->first('year') }}</span>
                         @endif
@@ -48,14 +71,17 @@
                     <div class="mb-1">
                         <label for="trimester" class="form-label">Trimester</label>
                         <div class="dropdown">
-                            <select class="btn btn-info" id="trimester" name="trimester" disabled>
-                                <option class="dropdown-item" disabled selected>-- Select one --</option>
+                            <select class="btn btn-info" id="trimester" name="trimester">
+                                <option class="dropdown-item" selected>-- Select one --</option>
                                 <option class="dropdown-item" value="1"
-                                    {{ old('trimester', $project->trimester) == '1' ? 'selected' : '' }}>1</option>
+                                    {{ old('trimester', $project->trimester) == '1' ? 'selected' : '' }}>1
+                                </option>
                                 <option class="dropdown-item" value="2"
-                                    {{ old('trimester', $project->trimester) == '2' ? 'selected' : '' }}>2</option>
+                                    {{ old('trimester', $project->trimester) == '2' ? 'selected' : '' }}>2
+                                </option>
                                 <option class="dropdown-item" value="3"
-                                    {{ old('trimester', $project->trimester) == '3' ? 'selected' : '' }}>3</option>
+                                    {{ old('trimester', $project->trimester) == '3' ? 'selected' : '' }}>3
+                                </option>
                             </select>
                         </div>
                         @if ($errors->has('trimester'))
@@ -63,12 +89,41 @@
                         @endif
                     </div>
                 </div>
-
+                <div class="mb-1">
+                    <label for="description" class="col-sm-2 col-form-label">Students</label>
+                    @forelse($project->project_users as $project_application)
+                        <ul>
+                            <li>{{ 'Name: ' .$project_application->user->name}}
+                                <br> {{'Note: '.$project_application->justification_note }}</li>
+                        </ul>
+                    @empty
+                        No Students have applied yet!
+                    @endforelse
+                </div>
+                <div class="mb-1">
+                    <label class="col-sm-2 col-form-label">Pictures</label>
+                    <br>
+                    @forelse($project->project_images as $image)
+                        <img src="{{ url($image->file_path) }}" alt="{{$image->name}}" width="200px">
+                    @empty
+                        No Images!
+                    @endforelse
+                </div>
+                <div class="mb-1">
+                    <label class="col-sm-2 col-form-label">Files</label>
+                    <br>
+                    @forelse($project->project_files as $file)
+                        <a href="{{ url($file->file_path) }}" download="">{{ $file->name }}</a>
+                    @empty
+                        No Files!
+                    @endforelse
+                </div>
                 <div class="col-auto">
                     <button type="submit" class="btn btn-warning mt-3 w-100">Update</button>
                 </div>
             </form>
         </div>
+
         <form method="get" action="{{ '/project_del/' . $project->id }}">
             @method('DELETE')
             @csrf
@@ -82,6 +137,8 @@
         <div>
             <form action="/project_image" method="POST" enctype="multipart/form-data">
                 @csrf
+                <input type="hidden" name="project_id" value="{{ $project->id }}">
+
                 <label>
                     <span>Choose Image File</span>
                     <input type="file" name="image"/>
@@ -89,7 +146,7 @@
                         <span class="text-danger">{{ $errors->first('image') }}</span>
                     @endif
                 </label>
-                <button type="submit" >Submit</button>
+                <button type="submit">Submit</button>
             </form>
         </div>
 
@@ -98,6 +155,8 @@
         <div>
             <form action="/project_file" method="POST" enctype="multipart/form-data">
                 @csrf
+                <input type="hidden" name="project_id" value="{{ $project->id }}">
+
                 <label>
                     <span>Choose PDF File</span>
                     <input type="file" name="pdf"/>
@@ -108,5 +167,6 @@
                 <button type="submit" >Submit</button>
             </form>
         </div>
+
     </div>
 @endsection

@@ -24,6 +24,8 @@ class ProjectFactory extends Factory
             'needed_students' => fake()->numberBetween(3, 6),
             'year' => fake()->numberBetween(2020, 2030),
             'trimester' => fake()->numberBetween(1, 3),
+            'contact_name' => fake()->name(),
+            'contact_email' => fake()->email()
         ];
     }
 }

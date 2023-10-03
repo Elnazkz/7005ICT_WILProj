@@ -11,7 +11,6 @@
                             <th scope="col">Year</th>
                             <th scope="col">Trimester</th>
                             <th scope="col">Project title</th>
-                            <th class="text-center" scope="col"></th>
                         </tr>
                         </thead>
                         <tbody>
@@ -28,23 +27,12 @@
                                     @else
                                         <th scope="row">{{ " " }}</th>
                                     @endif
-                                    @if ($project->trimester !== $trimester)
                                         <th scope="row">{{ $project->trimester }}</th>
-                                        @php($trimester = $project->trimester)
-                                    @else
-                                        <th scope="row">{{ " " }}</th>
-                                    @endif
-                                    <th scope="row">
+
+                                        <th scope="row">
                                         <a href="{{ '/project_show/' . $project->id }}">{{ $project->title }}</a>
                                     </th>
-                                    <td class="text-center">
-                                        @if ($is_student and $user->approved)
-                                            <button type="submit" class="btn btn-transparent">
-                                                <img class="bi" width="24" height="24" src="{{ asset('svgs/box-arrow-right.svg') }}"
-                                                     alt="Apply" />
-                                            </button>
-                                        @endif
-                                    </td>
+
                                 </tr>
                             </form>
                         @endforeach

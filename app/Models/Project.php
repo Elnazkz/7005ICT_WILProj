@@ -18,6 +18,8 @@ class Project extends Model
         'year',
         'trimester',
         'user_id',
+        'contact_name',
+        'contact_email'
     ];
 
     public function user() {

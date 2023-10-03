@@ -92,9 +92,9 @@
 {{--                                </div>--}}
 
                                 <!-- button -->
-                                <div class="d-grid mx-auto">
-                                    <button type="submit" class="btn btn-dark btn-block">Apply</button>
-                                </div>
+{{--                                <div class="d-grid mx-auto">--}}
+{{--                                    <button type="submit" class="btn btn-dark btn-block">Apply</button>--}}
+{{--                                </div>--}}
                             </form>
                         </div>
                     </div>

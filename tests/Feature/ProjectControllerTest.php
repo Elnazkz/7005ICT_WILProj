@@ -17,6 +17,8 @@ class ProjectControllerTest extends TestCase
         $this->actingAs($user); // Log in as the user
 
         $response = $this->post('/project_creation', [
+            'contact_name' => 'Mr. Smith',
+            'contact_email' => 'smith@gmail.com',
             'title' => 'Test Project in test',
             'description' => 'This is a test project',
             'needed_students' => 4,
@@ -35,6 +37,8 @@ class ProjectControllerTest extends TestCase
         $this->actingAs($user);
 
         $response = $this->post('/project_creation', [
+            'contact_name' => 'SM', // Invalid contact name
+            'contact_email' => 'sm@gmail', // Invalid email
             'title' => 'Te', // Invalid title
             'description' => 'Short description', // Invalid description
             'needed_students' => 2, // Invalid number of needed students
@@ -43,7 +47,7 @@ class ProjectControllerTest extends TestCase
         ]);
 
         $response->assertStatus(302); // Assuming you're redirecting after validation error
-        $response->assertSessionHasErrors(['title', 'description', 'needed_students']);
+        $response->assertSessionHasErrors(['title', 'description', 'needed_students', 'contact_name', 'contact_email']);
         //TODO check why trimester error is not showing
 //        $response->assertSessionHasErrors(['title', 'description', 'needed_students', 'trimester']);
         $this->assertDatabaseMissing('projects', ['title' => 'Te']); // No project should be created due to validation errors
@@ -56,6 +60,8 @@ class ProjectControllerTest extends TestCase
 
         // Create a project with a specific name and offering
         Project::create([
+            'contact_name' => 'MyContact',
+            'contact_email' => 'contact@email.com',
             'title' => 'Existing Project',
             'description' => 'Description',
             'needed_students' => 4,
@@ -65,6 +71,8 @@ class ProjectControllerTest extends TestCase
         ]);
 
         $response = $this->post('/project_creation', [
+            'contact_name' => 'MyContact',
+            'contact_email' => 'contact@email.com',
             'title' => 'Existing Project',
             'description' => 'Test description for duplicate name',
             'needed_students' => 3,

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Project;
+use App\Models\ProjectFile;
+use App\Models\ProjectImage;
 use App\Models\ProjectUser;
 use App\Models\User;
 use App\Rules\MinWordsCount;
@@ -10,13 +12,14 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use function PHPUnit\Framework\isEmpty;
 
 class ProjectController extends Controller
 {
     public function __construct()
     {
 //        $this->middleware('auth')->only(['create', 'store', 'edit', 'update', 'destroy', 'show']);
-        $this->middleware('auth')->except(['index', 'store_image', 'store_file']);
+        $this->middleware('auth')->except(['index']);
     }
 
     /**
@@ -25,21 +28,17 @@ class ProjectController extends Controller
     public function index()
     {
         $projects = Project::selectRaw('*')->orderBy('year', 'desc')->orderBy('trimester', 'desc')
-            ->groupBy('year')->groupBy('trimester')
+//            ->groupBy('year')->groupBy('trimester')
             ->paginate(config('_global.items_per_page'));
 
         $user = Auth::user();
-        // TODO $is_student is not needed
-        // that call student.project_page
-        // TODO always add default to switch
-        $is_student = WilAuthController::get_usertype($user) == config('_global.student');
         switch (WilAuthController::get_usertype($user)) {
             case config('_global.teacher'):
-                return view('teacher.projects_page', compact('projects', 'user', 'is_student'));
+                return view('teacher.projects_page', compact('projects', 'user'));
             case config('_global.student'):
-                return view('student.projects_page', compact('projects', 'user', 'is_student'));
+                return view('student.projects_page', compact('projects', 'user'));
             case config('_global.inp'):
-                return view('inp.projects_page', compact('projects', 'user', 'is_student'));
+                return view('inp.projects_page', compact('projects', 'user'));
 
         }
     }
@@ -59,6 +58,8 @@ class ProjectController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'contact_name' => 'required|min:5',
+            'contact_email' => 'required|email:rfc,dns',
             'title' => ['required',
                 'min:5',
                 Rule::unique('projects')
@@ -79,6 +80,8 @@ class ProjectController extends Controller
         $project->year = $request->year;
         $project->trimester = $request->trimester;
         $project->user_id = Auth::user()->id;
+        $project->contact_name = $request->contact_name;
+        $project->contact_email = $request->contact_email;
         $project->save();
 
         return redirect('/dispatch')->with('success', 'Project created successfully');
@@ -106,7 +109,7 @@ class ProjectController extends Controller
             case config('_global.student'):
                 $student = Auth::user();
                 $project_user = ProjectUser::where('project_id', $project->id)->where('user_id', $student->id)->first();
-                return view('student.project_details', compact(['project', 'student', 'project_user']));
+                return view('student.project_details', compact(['project', 'student', 'project_user',]));
             default:
                 // TODO I'm not sure this will work
                 return $this->signout(); //view('dashboard');
@@ -127,12 +130,29 @@ class ProjectController extends Controller
     public function update(Request $request, Project $project)
     {
         $request->validate([
+            'contact_name' => 'required|min:5',
+            'contact_email' => 'required|email:rfc,dns',
+            'title' => ['required',
+                'min:5',
+                Rule::unique('projects')
+                    ->where('title', $request->title)
+                    ->where('year', $request->year)
+                    ->where('trimester', $request->trimester)
+                    ->ignore($project->id), // Ignore the current project when checking uniqueness
+            ],
             'description' => ['required', new MinWordsCount(3)],
             'needed_students' => 'required|numeric|between:3,6',
+            'year' => 'required',
+            'trimester' => 'required|between:1,3',
         ]);
 
+        $project->title = $request->title;
+        $project->year = $request->year;
+        $project->trimester = $request->trimester;
         $project->description = $request->description;
         $project->needed_students = $request->needed_students;
+        $project->contact_name = $request->contact_name;
+        $project->contact_email = $request->contact_email;
         $project->update();
 
         return redirect('/dispatch')->with('success', 'Project created successfully');
@@ -144,9 +164,13 @@ class ProjectController extends Controller
      */
     public function destroy(Project $project)
     {
-        //
         $project_id = $project->id;
-        return redirect('/dispatch')->with('success', 'Project created successfully');
+        if ($project->project_users()->where('project_id',$project_id)->get()->isEmpty()) {
+            Project::find($project_id)->delete();
+            return redirect('/dispatch')->with('success', 'Project created successfully');
+        }else {
+            return redirect('/project_show/'.$project_id)->with('error', 'Project can not be deleted. Students have applied on this project.');
+        }
     }
 
     public function store_image(Request $request)
@@ -155,15 +179,16 @@ class ProjectController extends Controller
             'image' => 'required|image|mimes:jpg,png,jpeg,gif,svg|max:2048',
         ]);
 
-        $image_path = $request->file('image')->store('image', 'public');
+        $name = $request->project_id . "_project_image_".now();
+        $image_path = $request->file('image')->storeAs('images',$name);
 
-//        $data = Image::create([
-//            'image' => $image_path,
-//        ]);
-//
-//        session()->flash('success', 'Image Upload successfully');
+        $projectImage = new ProjectImage();
+        $projectImage->file_path = $image_path;
+        $projectImage->project_id = $request->project_id;
+        $projectImage->name = $name;
+        $projectImage->save();
 
-        return redirect('/dispatch')->with('success', 'Project created successfully');
+        return redirect()->back()->with(['success'=> 'Image uploaded successfully', 'image' => $projectImage]);
     }
 
     public function store_file(Request $request)
@@ -172,23 +197,25 @@ class ProjectController extends Controller
             'pdf' => 'required|mimetypes:application/pdf|max:10000',
         ]);
 
-        $pdf_path = $request->file('pdf')->store('pdf', 'public');
+        $name = $request->project_id . "_project_pdf_".now();
+        $pdf_path = $request->file('pdf')->storeAs('files',$name);
 
-//        $data = Image::create([
-//            'image' => $pdf_path,
-//        ]);
-//
-//        session()->flash('success', 'PDF Upload successfully');
+        $projectPdf = new ProjectFile();
+        $projectPdf->file_path = $pdf_path;
+        $projectPdf->project_id = $request->project_id;
+        $projectPdf->name = $name;
+        $projectPdf->save();
 
-        return redirect('/dispatch')->with('success', 'Project created successfully');
+        return redirect()->back()->with(['success'=> 'File uploaded successfully']);
     }
 
     public function apply_to_project(Request $request, Project $project) {
         $student = Auth::user();
+        $inp = $project->user()->first();
         $project_user = ProjectUser::where('user_id', $student->id)->where('project_id', $project->id)->first();
 
         if ($project_user !== null) {
-            return view('/student.project_details_update', compact('project', 'project_user', 'student'));
+            return view('/student.project_details_update', compact('project', 'project_user', 'student','inp'));
         } else {
             $data = $request->all();
             $data['count'] = ProjectUser::where('user_id', $student->id)->get()->count();
@@ -196,7 +223,7 @@ class ProjectController extends Controller
                 'count' => 'integer|max:2',
             ])->validate();
 
-            return view('/student.project_details', compact('project', 'project_user', 'student'));
+            return view('/student.project_details', compact('project', 'project_user', 'student','inp'));
         }
     }
 

@@ -16,6 +16,16 @@
                 <form class="w-100" action="{{ '/project_update/' . $project->id }}" method="post">
                     @csrf
                     <div class="mb-1">
+                        <label for="title" class="form-label">Contact Name</label>
+                        <input type="text" class="form-control" id="contact_name" name="contact_name"
+                               value="{{ $project->contact_name }}" disabled>
+                    </div>
+                    <div class="mb-1">
+                        <label for="title" class="form-label">Contact Email</label>
+                        <input type="text" class="form-control" id="contact_email" name="contact_email"
+                               value="{{ $project->contact_email }}" disabled>
+                    </div>
+                    <div class="mb-1">
                         <label for="title" class="form-label">Project Title</label>
                         <input type="text" class="form-control" id="title" name="title" autofocus
                                value="{{ $project->title }}" disabled>
@@ -49,6 +59,34 @@
                                 </select>
                             </div>
                         </div>
+                    </div>
+                    <div class="mb-1">
+                        <label class="col-sm-2 col-form-label">Students</label>
+                        @forelse($project->project_users as $project_application)
+                            <ul>
+                                <li>{{ 'Name: ' .$project_application->user->name}} <br> {{'Note: '.$project_application->justification_note }}</li>
+                            </ul>
+                        @empty
+                            No Students have applied yet!
+                        @endforelse
+                    </div>
+                    <div class="mb-1">
+                        <label class="col-sm-2 col-form-label">Pictures</label>
+                        <br>
+                        @forelse($project->project_images as $image)
+                            <img src="{{ url($image->file_path) }}" alt="{{$image->name}}" width="200px">
+                        @empty
+                            No Images!
+                        @endforelse
+                    </div>
+                    <div class="mb-1">
+                        <label class="col-sm-2 col-form-label">Files</label>
+                        <br>
+                        @forelse($project->project_files as $file)
+                            <a href="{{ url($file->file_path) }}" download="">{{ $file->name }}</a>
+                        @empty
+                            No Files!
+                        @endforelse
                     </div>
                 </form>
             </div>

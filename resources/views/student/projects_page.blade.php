@@ -57,13 +57,9 @@
                                 @else
                                     <th scope="row">{{ " " }}</th>
                                 @endif
-                                @if ($project->trimester !== $trimester)
                                     <th scope="row">{{ $project->trimester }}</th>
-                                    @php($trimester = $project->trimester)
-                                @else
-                                    <th scope="row">{{ " " }}</th>
-                                @endif
-                                <th scope="row">
+
+                                    <th scope="row">
                                     <a href="{{ '/project_page/' . $project->id }}">{{ $project->title }}</a>
                                 </th>
                                 <form method="get" action="{{ '/unapply_to_project/' . $project->id }}">
@@ -71,7 +67,6 @@
                                     {{--                            TODO not needed can be deleted --}}
                                     <input type="hidden" name="user_id" value="{{ $user->id }}">
                                     <td class="text-center">
-                                        {{-- TODO reduce to check only for $user->approved --}}
                                         @if (\App\Models\ProjectUser::project_isapplied($user->id, $project->id))
                                             <button type="submit" class="btn btn-transparent mt-0 pt-0">
                                                 <img class="bi" width="24" height="24"
@@ -86,14 +81,11 @@
                                     {{--                            TODO not needed can be deleted --}}
                                     <input type="hidden" name="user_id" value="{{ $user->id }}">
                                     <td class="text-center">
-                                        {{-- TODO reduce to check only for $user->approved --}}
-                                        @if ($is_student and $user->approved)
-                                            <button type="submit" class="btn btn-transparent mt-0 pt-0">
-                                                <img class="bi" width="24" height="24"
-                                                     src="{{ asset('svgs/box-arrow-right.svg') }}"
-                                                     alt="Apply"/>
-                                            </button>
-                                        @endif
+                                        <button type="submit" class="btn btn-transparent mt-0 pt-0" {{($user->approved) ? '' : 'disabled'}}>
+                                            <img class="bi" width="24" height="24"
+                                                 src="{{ asset('svgs/box-arrow-right.svg') }}"
+                                                 alt="Apply"/>
+                                        </button>
                                     </td>
                                 </form>
                             </tr>

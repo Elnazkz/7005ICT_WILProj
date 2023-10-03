@@ -39,7 +39,6 @@ Route::get('/profile/{user_id}', [ProfileController::class, 'show']);
 
 Route::get('/inp-details/{id}', [InpDetailController::class, 'show']);
 
-Route::get('/proj-details/{project_id}', [ProjectController::class, 'show']);
 Route::get('/create-project', [ProjectController::class, 'create']);
 Route::post('/project_creation', [ProjectController::class, 'store']);
 Route::get('/project_show/{project}', [ProjectController::class, 'show']);

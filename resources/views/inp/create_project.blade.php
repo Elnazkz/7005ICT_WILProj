@@ -1,18 +1,31 @@
 @extends('inp.layout')
 @section('inp_content')
     <div class="w-100">
+        @if(session('error'))
+            <span class="text-danger">{{  session('error') }}</span>
+        @endif
+        @if(session('success'))
+            <span class="text-danger">{{  session('success') }}</span>
+        @endif
         <div class="d-flex w-100">
-            <div class="card border-primary mb-3 w-100">
-                <div class="card-body text-primary">
-                    <h5 class="card-title">{{ $user->name }}</h5>
-                    <p class="card-text">{{ $user->email }}</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="d-flex w-100">
-            <form class="w-100" action="/project_creation" method="post">
+            <form class="w-100" action="/project_creation" method="post" enctype="multipart/form-data">
                 @csrf
+                <div class="mb-1">
+                    <label for="title" class="form-label">Contact Name</label>
+                    <input type="text" class="form-control" id="contact_name" name="contact_name"
+                           value="{{ @old('contact_name', $user->name) }}">
+                    @if ($errors->has('contact_name'))
+                        <span class="text-danger">{{ $errors->first('contact_name') }}</span>
+                    @endif
+                </div>
+                <div class="mb-1">
+                    <label for="title" class="form-label">Contact Email</label>
+                    <input type="text" class="form-control" id="contact_email" name="contact_email"
+                           value="{{ @old('contact_email', $user->email) }}">
+                    @if ($errors->has('contact_email'))
+                        <span class="text-danger">{{ $errors->first('contact_email') }}</span>
+                    @endif
+                </div>
                 <div class="mb-1">
                     <label for="title" class="form-label">Project Title</label>
                     <input type="text" class="form-control" id="title" name="title" autofocus
@@ -23,7 +36,8 @@
                 </div>
                 <div class="mb-1">
                     <label for="description" class="col-sm-2 col-form-label">Description</label>
-                    <textarea class="form-control" id="description" name="description" rows="3">{{ @old('description') }}</textarea>
+                    <textarea class="form-control" id="description" name="description"
+                              rows="3">{{ @old('description') }}</textarea>
                     @if ($errors->has('description'))
                         <span class="text-danger">{{ $errors->first('description') }}</span>
                     @endif
@@ -51,11 +65,14 @@
                             <select class="btn btn-info" id="trimester" name="trimester">
                                 <option class="dropdown-item" disabled selected>-- Select one --</option>
                                 <option class="dropdown-item" value="1"
-                                    {{ old('trimester') == '1' ? 'selected' : '' }}>1</option>
+                                    {{ old('trimester') == '1' ? 'selected' : '' }}>1
+                                </option>
                                 <option class="dropdown-item" value="2"
-                                    {{ old('trimester') == '2' ? 'selected' : '' }}>2</option>
+                                    {{ old('trimester') == '2' ? 'selected' : '' }}>2
+                                </option>
                                 <option class="dropdown-item" value="3"
-                                    {{ old('trimester') == '3' ? 'selected' : '' }}>3</option>
+                                    {{ old('trimester') == '3' ? 'selected' : '' }}>3
+                                </option>
                             </select>
                         </div>
                         @if ($errors->has('trimester'))
@@ -67,5 +84,28 @@
                 <button type="submit" class="btn btn-primary mt-3 w-100">Create</button>
             </form>
         </div>
+        <br>
+
+        <div>
+            <label>
+                <span>Choose Image File</span>
+                <input type="file" name="image"/>
+                @if ($errors->has('image'))
+                    <span class="text-danger">{{ $errors->first('image') }}</span>
+                @endif
+            </label>
+        </div>
+        <br>
+
+        <div>
+            <label>
+                <span>Choose PDF File</span>
+                <input type="file" name="pdf"/>
+                @if ($errors->has('pdf'))
+                    <span class="text-danger">{{ $errors->first('pdf') }}</span>
+                @endif
+            </label>
+        </div>
+
     </div>
 @endsection

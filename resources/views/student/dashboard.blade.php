@@ -2,6 +2,11 @@
 
 @section('student_content')
     <div class="p-2 align-self-stretch w-100">
+        @if(session('success'))
+            <div style="color: forestgreen;">
+                {{ session('success') }}
+            </div>
+        @endif
         <div class="d-flex flex-column p-3 h-100">
             <div class="row justify-content-center">
                 @if (isset($inps))
