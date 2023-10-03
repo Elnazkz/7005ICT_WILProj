@@ -30,7 +30,7 @@
             </a>
         </li>
         <li>
-            <a href="#" class="nav-link link-body-emphasis text-muted">
+            <a href="/auto_assign_page" class="nav-link link-body-emphasis">
                 <div class="d-flex flex-nowrap align-items-center">
                     <img class="bi pe-none me-2" width="16" height="16" src="{{ asset('svgs/filetype-exe.svg') }}" alt="Trigger Assignment" />
                     Trigger Automatic Assignment

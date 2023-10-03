@@ -22,6 +22,10 @@ class ProjectsTableSeeder extends Seeder
             $users->each(function ($user) {
                 $noProjects = fake()->randomDigitNot(0);
                 Project::factory()->for($user)->count($noProjects)->create();
+                if ($noProjects > 0) {
+                    $user->approved = true;
+                    $user->save();
+                }
             });
             $this->command->info("Projects created successfully " . $noInps);
         } else {
