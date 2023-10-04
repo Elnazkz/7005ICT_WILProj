@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\Project;
+use App\Models\ProjectUser;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -13,29 +15,38 @@ class ProjectUsersTableSeeder extends Seeder
      */
     public function run(): void
     {
-        $inps = User::select()->where('user_type', config('_global.inps'));
-        $noProfiles = max(intdiv($inps->count(), 2), 0);
-        if ($noProfiles > 0) {
-            $users = $inps->inRandomOrder()->limit($noProfiles)->get();
+        $all_students = User::where('user_type', '=', 'Student');
+        $students_cnt = $all_students->count();
+        $no_students = fake()->numberBetween(intdiv($students_cnt, 2), $students_cnt);
+//        $students = $all_students->inRandomOrder()->limit($no_students)->get();
+        $students = $all_students->get();
 
-            $users->each(function ($user) {
-                $user_id = $user->id;
+        $all_projects = Project::select();
+        $project_cnt = $all_projects->count();
 
-//                Profile::factory()->for($user)->create();
-//                $noRoles = fake()->numberBetween(1, 3);
-//                for ($i = 0; $i < $noRoles; $i++) {
-//                    do {
-//                        $user_role = UserRole::factory()->make();
-//                        $role_id = $user_role->role_id;
-//                        $count = UserRole::where('user_id', '=', $user_id)->where('role_id', '=', $role_id)->count();
-//                    } while ($count > 0);
-//                    $user_role->user_id = $user_id;
-//                    $user_role->save();
-//                }
-            });
-            $this->command->info("Project users created successfully !" . $noProfiles);
-        } else {
-            $this->command->info('No student defined !\n');
+        foreach ($students as $student) {
+            if ($student->approved) {
+                $no_applied = 0;
+                $no_projects = fake()->numberBetween(0, 3);
+                $projects = $all_projects->inRandomOrder()->limit($no_projects)->get();
+                foreach ($projects as $project) {
+                    $cnt = ProjectUser::where('project_id', $project->id)->where('user_id', $student->id)->count();
+                    if ($cnt === 0) {
+                        $project_user = new ProjectUser();
+                        $project_user->user_id = $student->id;
+                        $project_user->project_id = $project->id;
+                        $project_user->justification_note = fake()->words(random_int(5, 15), true);
+                        $project_user->assigned = false;
+                        $project_user->save();
+
+                        $no_applied++;
+                        if ($no_applied >= 3)
+                            break;
+                    }
+                }
+            }
         }
+
+        $this->command->info("Project users created successfully !");
     }
 }

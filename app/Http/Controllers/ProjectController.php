@@ -7,9 +7,11 @@ use App\Models\ProjectFile;
 use App\Models\ProjectImage;
 use App\Models\ProjectUser;
 use App\Models\User;
+use App\Models\UserRole;
 use App\Rules\MinWordsCount;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use function PHPUnit\Framework\isEmpty;
@@ -28,8 +30,7 @@ class ProjectController extends Controller
     public function index()
     {
         $projects = Project::selectRaw('*')->orderBy('year', 'desc')->orderBy('trimester', 'desc')
-//            ->groupBy('year')->groupBy('trimester')
-            ->paginate(config('_global.items_per_page'));
+            ->paginate(config('_global.projects_per_page'));
 
         $user = Auth::user();
         switch (WilAuthController::get_usertype($user)) {
@@ -307,11 +308,32 @@ class ProjectController extends Controller
 
     public function unapply_to_project(Project $project)
     {
-        $student = Auth::user();
-        $project_user = ProjectUser::where('user_id', $student->id)->where('project_id', $project->id)->first();
+//        $student = Auth::user();
+//        $project_user = ProjectUser::where('user_id', $student->id)->where('project_id', $project->id)->first();
+//
+//        if (!$project_user->assigned)
+//        $project_user?->delete();
+//        return $this->index();
 
-        $project_user?->delete();
-        return $this->index();
+        // TODO only students must reach here
+        $user = Auth::user();
+        if ($user->user_type !== config('_global.student')) {
+            $msg = "Bad User Type !!!";
+        } else {
+            $project_user = ProjectUser::where('user_id', $user->id)->where('project_id', $project->id)->first();
+            if (!$project_user->assigned) {
+                // remove from database
+                $project_user?->delete();
+                $msg = "";
+            } else
+                $msg = "Can't be unassigned, it is assigned !";
+
+        }
+
+        $projects = Project::selectRaw('*')->orderBy('year', 'desc')->orderBy('trimester', 'desc')
+            ->paginate(config('_global.projects_per_page'));
+
+        return view('student.projects_page', compact('projects', 'user'))->withErrors($msg, 'unapply');
     }
 
     public function show_page(Project $project)
@@ -337,5 +359,50 @@ class ProjectController extends Controller
                 // TODO I'm not sure this will work
                 return $this->signout(); //view('dashboard');
         }
+    }
+
+    public function auto_assign() {
+        if (UserRole::all()->count() <= 0) {
+            return redirect()->back()->withErrors(['No user with a taken role !']);
+        }
+
+        $assigned_list = [];
+        $proj_users = ProjectUser::where('assigned', false)->get();
+
+        if ($proj_users->count() === 0) {
+            return redirect()->back()->withErrors(['No free user !']);
+        }
+
+        foreach ($proj_users as $proj_user) {
+            $project = $proj_user->project();
+            $needed_students = $project->first()->needed_students;
+            $assigned_student = $project->first()->assigned_students;
+            $first_time = true;
+            $students_user_project = ProjectUser::where('assigned', false)->get();
+            foreach ($students_user_project as $student_user_project) {
+                if ($student_user_project->user()->first()->approved) {
+                    if (!$student_user_project->assigned) {
+                        $gpa = $student_user_project->user()->first()->profile()->first()->gpa;
+                        if ($first_time) {
+                            $min_range = max(0, $gpa - 1);
+                            $max_range = min(7, $gpa + 1);
+                            $first_time = false;
+                        }
+                        if (($min_range <= $gpa) && ($gpa <= $max_range)) {
+                            $student_user_project->assigned = true;
+                            $student_user_project->update();
+                            $assigned_list[] = [$student_user_project];
+                            $assigned_student++;
+                        }
+                    }
+                }
+                if ($assigned_student >= $needed_students)
+                    break;
+            }
+            $proj_user->project()->first()->assigned_student = $assigned_student;
+            $proj_user->project()->first()->update();
+        }
+
+        return redirect()->back()->withInput(['success' =>'Auto assignment completed successfully !', 'assigned_list' => $assigned_list]);
     }
 }

@@ -22,6 +22,7 @@ class ProjectFactory extends Factory
             'title' => fake()->unique()->words(rand(5, 15), true),
             'description' => fake()->paragraph(),
             'needed_students' => fake()->numberBetween(3, 6),
+            'assigned_students' => 0,
             'year' => fake()->numberBetween(2020, 2030),
             'trimester' => fake()->numberBetween(1, 3),
             'contact_name' => fake()->name(),

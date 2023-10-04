@@ -114,6 +114,7 @@
                     <br>
                     @forelse($project->project_images as $image)
                         <img src="{{ asset('storage/images/'.$image->name) }}" alt="{{$image->name}}" width="200px">
+                        <br>
                     @empty
                         No Images!
                     @endforelse
@@ -123,6 +124,7 @@
                     <br>
                     @forelse($project->project_files as $file)
                         <a href="{{ asset('storage/files/'.$file->name) }}" download="">{{ $file->name }}</a>
+                        <br>
                     @empty
                         No Files!
                     @endforelse

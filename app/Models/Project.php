@@ -15,6 +15,7 @@ class Project extends Model
         'title',
         'description',
         'needed_students',
+        'assigned_students',
         'year',
         'trimester',
         'user_id',

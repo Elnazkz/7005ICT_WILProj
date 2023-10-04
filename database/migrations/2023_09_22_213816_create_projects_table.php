@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('title')->unique();
             $table->string('description');
             $table->integer('needed_students');
+            $table->integer('assigned_students');
             $table->integer('year');
             $table->integer('trimester');
             $table->unsignedBigInteger('user_id');

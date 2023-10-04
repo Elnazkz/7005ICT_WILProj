@@ -15,6 +15,7 @@ class ProjectUser extends Model
         'user_id',
         'project_id',
         'justification_note',
+        'assigned',
     ];
 
     public function project() {

@@ -18,6 +18,6 @@ class DatabaseSeeder extends Seeder
         $this->call(ProjectsTableSeeder::class);
         $this->call(ProjectFilesSeeder::class);
         $this->call(ProjectImagesSeeder::class);
-
+        $this->call(ProjectUsersTableSeeder::class);
     }
 }

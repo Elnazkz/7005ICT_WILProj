@@ -26,6 +26,6 @@ class UsersTableSeeder extends Seeder
             'created_at' => DB::raw('CURRENT_TIMESTAMP'),
             'updated_at' => DB::raw('CURRENT_TIMESTAMP'),
         ]);
-        User::factory()->count(40)->create();
+        User::factory()->count(10)->create();
     }
 }

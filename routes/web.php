@@ -55,7 +55,7 @@ Route::get('/project_page/{project}', [ProjectController::class, 'show_page']);
 Route::get('/auto_assign_page', function() {
     return view('teacher.auto_assign_page');
 });
-Route::get('/start_auto_assignment', [ProjectController::class, 'auto_assign']);
+Route::post('/start_auto_assignment', [ProjectController::class, 'auto_assign']);
 
 // Default home route
 Route::get('/', [WilAuthController::class, 'dispatch'])->name('home');
