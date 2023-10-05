@@ -17,7 +17,7 @@ class ProfilesUserRolesTableSeeder extends Seeder
     public function run(): void
     {
         $students = User::select()->where('user_type', config('_global.student'));
-        $noProfiles = max(intdiv($students->count(), 2), 0);
+        $noProfiles = max(intdiv($students->count()*3, 4), 0);
         if ($noProfiles > 0) {
             $users = $students->inRandomOrder()->limit($noProfiles)->get();
 

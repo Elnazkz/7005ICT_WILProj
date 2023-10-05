@@ -360,49 +360,4 @@ class ProjectController extends Controller
                 return $this->signout(); //view('dashboard');
         }
     }
-
-    public function auto_assign() {
-        if (UserRole::all()->count() <= 0) {
-            return redirect()->back()->withErrors(['No user with a taken role !']);
-        }
-
-        $assigned_list = [];
-        $proj_users = ProjectUser::where('assigned', false)->get();
-
-        if ($proj_users->count() === 0) {
-            return redirect()->back()->withErrors(['No free user !']);
-        }
-
-        foreach ($proj_users as $proj_user) {
-            $project = $proj_user->project();
-            $needed_students = $project->first()->needed_students;
-            $assigned_student = $project->first()->assigned_students;
-            $first_time = true;
-            $students_user_project = ProjectUser::where('assigned', false)->get();
-            foreach ($students_user_project as $student_user_project) {
-                if ($student_user_project->user()->first()->approved) {
-                    if (!$student_user_project->assigned) {
-                        $gpa = $student_user_project->user()->first()->profile()->first()->gpa;
-                        if ($first_time) {
-                            $min_range = max(0, $gpa - 1);
-                            $max_range = min(7, $gpa + 1);
-                            $first_time = false;
-                        }
-                        if (($min_range <= $gpa) && ($gpa <= $max_range)) {
-                            $student_user_project->assigned = true;
-                            $student_user_project->update();
-                            $assigned_list[] = [$student_user_project];
-                            $assigned_student++;
-                        }
-                    }
-                }
-                if ($assigned_student >= $needed_students)
-                    break;
-            }
-            $proj_user->project()->first()->assigned_student = $assigned_student;
-            $proj_user->project()->first()->update();
-        }
-
-        return redirect()->back()->withInput(['success' =>'Auto assignment completed successfully !', 'assigned_list' => $assigned_list]);
-    }
 }

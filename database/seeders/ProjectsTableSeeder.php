@@ -15,7 +15,7 @@ class ProjectsTableSeeder extends Seeder
     public function run(): void
     {
         $inps = User::select()->where('user_type', config('_global.inp'));
-        $noInps = max(intdiv($inps->count(), 2), 0);
+        $noInps = max(intdiv($inps->count()*3, 4), 0);
         if ($noInps > 0) {
             $users = $inps->inRandomOrder()->limit($noInps)->get();
 

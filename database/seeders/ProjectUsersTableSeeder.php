@@ -27,7 +27,7 @@ class ProjectUsersTableSeeder extends Seeder
         foreach ($students as $student) {
             if ($student->approved) {
                 $no_applied = 0;
-                $no_projects = fake()->numberBetween(0, 3);
+                $no_projects = fake()->numberBetween(0, 10);
                 $projects = $all_projects->inRandomOrder()->limit($no_projects)->get();
                 foreach ($projects as $project) {
                     $cnt = ProjectUser::where('project_id', $project->id)->where('user_id', $student->id)->count();
