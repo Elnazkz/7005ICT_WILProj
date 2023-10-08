@@ -52,9 +52,7 @@ Route::get('/unapply_to_project/{project}', [ProjectController::class, 'unapply_
 Route::post('/project_user_update', [ProjectUserController::class, 'apply']);
 Route::get('/project_page/{project}', [ProjectController::class, 'show_page']);
 
-Route::get('/auto_assign_page', function() {
-    return view('teacher.auto_assign_page');
-});
+Route::get('/auto_assign_page', [ProjectUserController::class, 'auto_assign_page']);
 Route::post('/start_auto_assignment', [ProjectUserController::class, 'auto_assign']);
 
 // Default home route
